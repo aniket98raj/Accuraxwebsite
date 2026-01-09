@@ -1,5 +1,6 @@
 import { Facebook, Twitter, Linkedin, Instagram, Mail } from "lucide-react";
 import { Link } from "react-router-dom";
+import { LogoIcon } from "./Logo";
 
 export function Footer() {
   return (
@@ -8,10 +9,8 @@ export function Footer() {
         <div className="grid md:grid-cols-4 gap-8 mb-8">
           {/* Brand */}
           <div>
-            <Link to="/" className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">A</span>
-              </div>
+            <Link to="/" className="flex items-center gap-2 mb-4 group">
+              <LogoIcon className="w-9 h-9 transition-transform group-hover:scale-105" />
               <span className="text-xl font-bold text-white">AccuraX</span>
             </Link>
             <p className="text-gray-500 text-sm leading-relaxed">

@@ -7,7 +7,7 @@ export function About() {
       <section className="max-w-7xl mx-auto mb-20">
         <div className="text-center mb-12">
           <h1 className="text-5xl font-bold text-white mb-6">
-            About <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">AccuraX.in</span>
+            About <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">AccuraX</span>
           </h1>
           <p className="text-xl text-gray-400 max-w-3xl mx-auto">
             Revolutionizing algorithmic trading with cutting-edge AI technology and unparalleled market insights.

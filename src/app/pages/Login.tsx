@@ -2,6 +2,7 @@ import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Checkbox } from "../components/ui/checkbox";
 import { Link } from "react-router-dom";
+import { LogoIcon } from "../components/Logo";
 
 export function Login() {
   return (
@@ -19,10 +20,8 @@ export function Login() {
         {/* Right Side - Login Form */}
         <div className="bg-black p-8 md:p-12 rounded-2xl shadow-2xl border border-gray-800">
           <div className="mb-8">
-            <Link to="/" className="flex items-center gap-2 mb-6">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-xl">A</span>
-              </div>
+            <Link to="/" className="flex items-center gap-2 mb-6 group">
+              <LogoIcon className="w-10 h-10 transition-transform group-hover:scale-105" />
               <span className="text-2xl font-bold text-white">AccuraX</span>
             </Link>
             <h1 className="text-3xl font-bold text-white mb-2">Welcome Back</h1>

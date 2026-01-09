@@ -1,6 +1,6 @@
 # AccuraX - Algorithmic Trading Platform
 
-A professional algorithmic trading platform built with React, TypeScript, and Tailwind CSS. AccuraX enables traders to build, backtest, and deploy automated trading strategies without writing code.
+A professional algorithmic trading platform built with React, TypeScript, and Tailwind CSS. AccuraX features a distinctive X logo and enables traders to build, backtest, and deploy automated trading strategies without writing code.
 
 ![AccuraX](https://img.shields.io/badge/AccuraX-Trading%20Platform-blue?style=for-the-badge)
 ![React](https://img.shields.io/badge/React-18.3.1-61DAFB?style=for-the-badge&logo=react)
@@ -10,6 +10,7 @@ A professional algorithmic trading platform built with React, TypeScript, and Ta
 ## 🌟 Features
 
 - **Multi-Page Application** with React Router
+- **Custom X Logo** with blue-to-purple gradient
 - **Pure Black Dark Theme** (#000000)
 - **Responsive Design** - Mobile, Tablet, Desktop
 - **Modern UI Components** - Built with Radix UI & shadcn/ui
