@@ -129,6 +129,41 @@ export function Pricing() {
           ))}
         </div>
 
+        {/* Educational Disclaimer */}
+        <div className="mb-16 max-w-5xl mx-auto">
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-blue-500/5 p-[2px]">
+            <div className="relative bg-black rounded-3xl p-12 text-center">
+              <div className="max-w-3xl mx-auto space-y-6">
+                <p className="text-2xl text-gray-200 leading-relaxed whitespace-nowrap">
+                  Monthly subscription provides access to educational{" "}
+                  <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent font-semibold">
+                    concept
+                  </span>{" "}
+                  materials only.
+                </p>
+                
+                <div className="h-px bg-gradient-to-r from-transparent via-gray-700 to-transparent my-8" />
+                
+                <div className="space-y-4">
+                  <p className="text-xl text-gray-300">
+                    No{" "}
+                    <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent font-semibold">
+                      concept
+                    </span>{" "}
+                    represents a trading strategy.
+                  </p>
+                  <p className="text-xl text-gray-300">
+                    No returns are promised.
+                  </p>
+                  <p className="text-xl text-gray-300">
+                    Learning purpose only.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* FAQ Section */}
         <div className="max-w-3xl mx-auto">
           <h2 className="text-3xl font-bold text-white text-center mb-12">

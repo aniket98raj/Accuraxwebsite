@@ -1,7 +1,8 @@
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Textarea } from "../components/ui/textarea";
-import { Mail, Phone, MapPin, MessageSquare } from "lucide-react";
+import { Mail, Phone } from "lucide-react";
+import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 
 export function Contact() {
   return (
@@ -81,7 +82,7 @@ export function Contact() {
           {/* Contact Information */}
           <div className="space-y-8">
             <div>
-              <img 
+              <ImageWithFallback
                 src="https://images.unsplash.com/photo-1709715357479-591f9971fb05?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjdXN0b21lciUyMHN1cHBvcnQlMjBoZWxwfGVufDF8fHx8MTc2Nzk1Njk4OHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
                 alt="Support Team"
                 className="rounded-2xl shadow-2xl mb-8 ring-1 ring-white/10"
@@ -96,7 +97,6 @@ export function Contact() {
                 <div>
                   <h3 className="font-bold text-white mb-1">Email Us</h3>
                   <p className="text-gray-400">support@accurax.in</p>
-                  <p className="text-gray-400">sales@accurax.in</p>
                 </div>
               </div>
 
@@ -106,32 +106,8 @@ export function Contact() {
                 </div>
                 <div>
                   <h3 className="font-bold text-white mb-1">Call Us</h3>
-                  <p className="text-gray-400">+1 (555) 123-4567</p>
-                  <p className="text-gray-400 text-sm">Mon-Fri: 9am - 6pm EST</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center flex-shrink-0 border border-green-500/20">
-                  <MapPin className="w-6 h-6 text-green-400" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-white mb-1">Visit Us</h3>
-                  <p className="text-gray-400">123 Trading Street</p>
-                  <p className="text-gray-400">New York, NY 10001</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-full bg-orange-500/10 flex items-center justify-center flex-shrink-0 border border-orange-500/20">
-                  <MessageSquare className="w-6 h-6 text-orange-400" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-white mb-1">Live Chat</h3>
-                  <p className="text-gray-400">Available 24/7</p>
-                  <Button variant="link" className="px-0 text-blue-400 hover:text-blue-300">
-                    Start Chat →
-                  </Button>
+                  <p className="text-gray-400">+91 7366057969</p>
+                  <p className="text-gray-400 text-sm">Mon-Fri: 9am - 6pm IST</p>
                 </div>
               </div>
             </div>

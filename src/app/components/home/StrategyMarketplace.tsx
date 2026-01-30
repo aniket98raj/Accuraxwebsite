@@ -6,42 +6,42 @@ const strategies = [
   {
     name: "Mean Reversion Pro",
     category: "Momentum",
-    returns: "+24.5%",
+    performance: "Example Case Study",
     risk: "Medium",
     timeframe: "1H",
     rating: 4.8,
     users: 1234,
-    description: "Capitalizes on price reversals after extreme movements"
+    description: "Educational framework on price reversals after extreme movements"
   },
   {
     name: "Trend Following Elite",
     category: "Trend",
-    returns: "+31.2%",
+    performance: "Hypothetical Model",
     risk: "Low",
     timeframe: "4H",
     rating: 4.9,
     users: 2156,
-    description: "Follows strong market trends with dynamic stop-loss"
+    description: "Conceptual learning on following market trends with dynamic management"
   },
   {
     name: "Breakout Hunter",
     category: "Breakout",
-    returns: "+28.7%",
+    performance: "Learning Module",
     risk: "Medium",
     timeframe: "15M",
     rating: 4.7,
     users: 987,
-    description: "Identifies and trades key support/resistance breakouts"
+    description: "Education on identifying key support/resistance breakouts"
   },
   {
     name: "Options Scalper",
     category: "Scalping",
-    returns: "+19.3%",
+    performance: "Concept Study",
     risk: "High",
     timeframe: "5M",
     rating: 4.6,
     users: 756,
-    description: "High-frequency scalping strategy for options trading"
+    description: "High-frequency scalping concepts for options trading education"
   }
 ];
 
@@ -52,17 +52,17 @@ export function StrategyMarketplace() {
         <div className="flex items-end justify-between mb-12">
           <div>
             <div className="inline-block px-4 py-2 bg-blue-500/10 text-blue-400 rounded-full text-sm font-medium mb-4 border border-blue-500/20">
-              Strategy Marketplace
+              Educational Strategy Library
             </div>
             <h2 className="text-4xl lg:text-5xl font-bold text-white mb-4">
-              Pre-Built Strategies Ready to Deploy
+              Pre-Built Learning Modules & Concept Studies
             </h2>
             <p className="text-xl text-gray-400 max-w-3xl">
-              Choose from our library of battle-tested strategies created by professional traders
+              Explore our library of educational frameworks and hypothetical strategy concepts
             </p>
           </div>
           <Button variant="outline" className="hidden lg:flex border-gray-700 text-gray-300 hover:bg-white/5">
-            View All Strategies
+            View All Modules
           </Button>
         </div>
 
@@ -88,8 +88,8 @@ export function StrategyMarketplace() {
 
               <div className="space-y-3 mb-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-400">Returns (30d)</span>
-                  <span className="text-sm font-bold text-green-400">{strategy.returns}</span>
+                  <span className="text-sm text-gray-400">Performance</span>
+                  <span className="text-sm font-bold text-green-400">{strategy.performance}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-400">Risk Level</span>
@@ -116,7 +116,7 @@ export function StrategyMarketplace() {
                   </span>
                 </div>
                 <Button className="w-full bg-white/5 hover:bg-white/10 text-white border border-gray-800 group-hover:border-blue-500 group-hover:bg-blue-500/10 group-hover:text-blue-400 transition-all">
-                  Deploy Strategy
+                  Learn Strategy
                 </Button>
               </div>
             </Card>
@@ -125,7 +125,7 @@ export function StrategyMarketplace() {
 
         <div className="text-center mt-8 lg:hidden">
           <Button variant="outline" className="border-gray-700 text-gray-300 hover:bg-white/5">
-            View All Strategies
+            View All Modules
           </Button>
         </div>
       </div>

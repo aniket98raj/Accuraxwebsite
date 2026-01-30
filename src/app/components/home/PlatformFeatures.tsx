@@ -1,5 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { CheckCircle } from "lucide-react";
+import { ImageWithFallback } from "../figma/ImageWithFallback";
 
 const features = {
   backtesting: {
@@ -100,7 +101,7 @@ export function PlatformFeatures() {
                   </ul>
                 </div>
                 <div>
-                  <img 
+                  <ImageWithFallback
                     src={feature.image}
                     alt={feature.title}
                     className="rounded-2xl shadow-2xl ring-1 ring-white/10 w-full"

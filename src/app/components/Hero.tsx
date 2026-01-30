@@ -1,5 +1,6 @@
 import { Button } from "./ui/button";
 import { ArrowRight, TrendingUp, Shield, Zap } from "lucide-react";
+import { ImageWithFallback } from "./figma/ImageWithFallback";
 
 export function Hero() {
   return (
@@ -19,6 +20,10 @@ export function Hero() {
                 AccuraX
               </span>
             </h1>
+            
+            <p className="text-lg italic text-blue-300/80 font-medium">
+              We teach concepts, not trades. We sell knowledge, not profits.
+            </p>
             
             <p className="text-xl text-gray-300 leading-relaxed">
               Harness the power of advanced algorithms and AI-driven insights to maximize your trading potential. 
@@ -60,7 +65,7 @@ export function Hero() {
             <div className="absolute -top-4 -left-4 w-72 h-72 bg-purple-600/20 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
             <div className="absolute -bottom-8 right-4 w-72 h-72 bg-blue-600/20 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
             <div className="relative">
-              <img 
+              <ImageWithFallback
                 src="https://images.unsplash.com/photo-1560221328-12fe60f83ab8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdG9jayUyMG1hcmtldCUyMHRyYWRpbmclMjBjaGFydHN8ZW58MXx8fHwxNzY3ODYxNjM2fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
                 alt="Trading Dashboard"
                 className="rounded-2xl shadow-2xl ring-1 ring-white/10"

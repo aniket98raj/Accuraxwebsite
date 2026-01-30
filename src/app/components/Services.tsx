@@ -1,4 +1,5 @@
 import { Code, LineChart, Rocket, Users } from "lucide-react";
+import { ImageWithFallback } from "./figma/ImageWithFallback";
 
 const services = [
   {
@@ -81,7 +82,7 @@ export function Services() {
 
         {/* Image Section */}
         <div className="mt-16">
-          <img 
+          <ImageWithFallback
             src="https://images.unsplash.com/photo-1748609160056-7b95f30041f0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmaW5hbmNpYWwlMjBhbmFseXRpY3MlMjBkYXNoYm9hcmR8ZW58MXx8fHwxNzY3OTU1NjQ2fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
             alt="Trading Platform Dashboard"
             className="rounded-2xl shadow-2xl w-full ring-1 ring-white/10"

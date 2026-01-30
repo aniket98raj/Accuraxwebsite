@@ -3,6 +3,7 @@ import { Input } from "../components/ui/input";
 import { Checkbox } from "../components/ui/checkbox";
 import { Link } from "react-router-dom";
 import { LogoIcon } from "../components/Logo";
+import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 
 export function Login() {
   return (
@@ -10,7 +11,7 @@ export function Login() {
       <div className="max-w-6xl w-full grid lg:grid-cols-2 gap-8 items-center">
         {/* Left Side - Image */}
         <div className="hidden lg:block">
-          <img 
+          <ImageWithFallback
             src="https://images.unsplash.com/photo-1762330469123-ce98036eff16?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzZWN1cmUlMjBsb2dpbiUyMGF1dGhlbnRpY2F0aW9ufGVufDF8fHx8MTc2Nzg1MjU5Nnww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
             alt="Secure Login"
             className="rounded-2xl shadow-2xl ring-1 ring-white/10"

@@ -7,32 +7,32 @@ const plans = [
     name: "Starter",
     price: "0",
     period: "Forever Free",
-    description: "Perfect for beginners to get started",
+    description: "Perfect for beginners learning trading concepts",
     features: [
-      "1 Active Strategy",
-      "Basic Market Data",
-      "Paper Trading",
+      "1 Learning Module Access",
+      "Basic Educational Content",
+      "Practice Simulation",
       "Community Support",
       "Mobile App Access",
       "Educational Resources"
     ],
-    cta: "Start Free",
+    cta: "Start Learning Free",
     popular: false
   },
   {
     name: "Professional",
     price: "99",
     period: "per month",
-    description: "For serious traders who want more",
+    description: "For serious learners who want comprehensive education",
     features: [
-      "10 Active Strategies",
-      "Real-Time Market Data",
-      "Live Trading",
+      "10 Learning Module Access",
+      "Real-Time Educational Data",
+      "Advanced Learning Simulations",
       "Priority Support 24/7",
-      "Advanced Analytics",
-      "API Access",
-      "Backtesting Tools",
-      "Custom Indicators"
+      "Advanced Educational Analytics",
+      "API Access for Learning",
+      "Historical Analysis Tools",
+      "Custom Educational Indicators"
     ],
     cta: "Start Trial",
     popular: true
@@ -41,13 +41,13 @@ const plans = [
     name: "Enterprise",
     price: "299",
     period: "per month",
-    description: "Maximum power for institutional traders",
+    description: "Maximum educational content for institutional learning",
     features: [
-      "Unlimited Strategies",
-      "Ultra Low-Latency Data",
-      "Multi-Account Trading",
+      "Unlimited Module Access",
+      "Premium Educational Content",
+      "Multi-User Learning Accounts",
       "Dedicated Account Manager",
-      "Custom Integration",
+      "Custom Educational Integration",
       "White-Label Options",
       "Advanced Risk Management",
       "Custom Development"
@@ -64,13 +64,13 @@ export function Pricing() {
         {/* Header */}
         <div className="text-center mb-16">
           <div className="inline-block px-4 py-2 bg-green-500/10 text-green-400 rounded-full text-sm font-medium mb-4 border border-green-500/20">
-            Pricing
+            Educational Subscription Plans
           </div>
           <h2 className="text-4xl lg:text-5xl font-bold text-white mb-4">
-            Choose Your Trading Plan
+            Choose Your Learning Plan
           </h2>
           <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-            Flexible pricing options for traders at every level
+            Flexible educational subscription options for learners at every level
           </p>
         </div>
 

@@ -1,14 +1,40 @@
 import { Button } from "./ui/button";
-import { Menu, X } from "lucide-react";
-import { useState } from "react";
+import { Menu, X, ChevronDown } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { LogoIcon } from "./Logo";
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [educationalDropdownOpen, setEducationalDropdownOpen] = useState(false);
+  const [mobileEducationalOpen, setMobileEducationalOpen] = useState(false);
   const location = useLocation();
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const isActive = (path: string) => location.pathname === path;
+
+  const educationalLinks = [
+    { name: "Godzilla Concept", path: "/educational/godzilla" },
+    { name: "Wolf Concept", path: "/educational/wolf" },
+    { name: "Turtle Concept", path: "/educational/turtle" }
+  ];
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setEducationalDropdownOpen(false);
+      }
+    };
+
+    if (educationalDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [educationalDropdownOpen]);
 
   return (
     <header className="fixed top-0 left-0 right-0 bg-black/95 backdrop-blur-sm border-b border-gray-800 z-50">
@@ -23,7 +49,7 @@ export function Header() {
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden md:flex items-center gap-6">
             <Link 
               to="/" 
               className={`transition-colors ${isActive('/') ? 'text-blue-400 font-medium' : 'text-gray-300 hover:text-white'}`}
@@ -34,30 +60,86 @@ export function Header() {
               to="/about" 
               className={`transition-colors ${isActive('/about') ? 'text-blue-400 font-medium' : 'text-gray-300 hover:text-white'}`}
             >
-              About
+              About Us
             </Link>
+
+            <Link 
+              to="/services" 
+              className={`transition-colors ${isActive('/services') ? 'text-blue-400 font-medium' : 'text-gray-300 hover:text-white'}`}
+            >
+              Services
+            </Link>
+
+            {/* Educational Concepts Dropdown */}
+            <div 
+              className="relative"
+              ref={dropdownRef}
+            >
+              <button
+                onClick={() => setEducationalDropdownOpen(!educationalDropdownOpen)}
+                className={`flex items-center gap-1 transition-colors ${
+                  location.pathname.startsWith('/educational') 
+                    ? 'text-blue-400 font-medium' 
+                    : 'text-gray-300 hover:text-white'
+                }`}
+              >
+                Educational Concepts
+              </button>
+
+              {/* Dropdown Menu */}
+              {educationalDropdownOpen && (
+                <div className="absolute top-full left-0 mt-2 w-48 bg-black border border-gray-700 shadow-lg rounded-md overflow-hidden">
+                  {educationalLinks.map((link) => (
+                    <Link
+                      key={link.path}
+                      to={link.path}
+                      className={`block px-4 py-3 text-sm border-b border-gray-800 last:border-b-0 transition-colors ${
+                        isActive(link.path)
+                          ? 'text-blue-400 bg-gray-900'
+                          : 'text-gray-300 hover:bg-gray-900 hover:text-white'
+                      }`}
+                      onClick={() => setEducationalDropdownOpen(false)}
+                    >
+                      {link.name}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <Link 
               to="/pricing" 
               className={`transition-colors ${isActive('/pricing') ? 'text-blue-400 font-medium' : 'text-gray-300 hover:text-white'}`}
             >
-              Pricing
+              Subscription
+            </Link>
+            <Link 
+              to="/disclaimer" 
+              className={`transition-colors ${isActive('/disclaimer') ? 'text-blue-400 font-medium' : 'text-gray-300 hover:text-white'}`}
+            >
+              Disclaimer
+            </Link>
+            <Link 
+              to="/risk-disclosure" 
+              className={`transition-colors ${isActive('/risk-disclosure') ? 'text-blue-400 font-medium' : 'text-gray-300 hover:text-white'}`}
+            >
+              Risk Disclosure
             </Link>
             <Link 
               to="/contact" 
               className={`transition-colors ${isActive('/contact') ? 'text-blue-400 font-medium' : 'text-gray-300 hover:text-white'}`}
             >
-              Contact
+              Contact Us
             </Link>
           </div>
 
           {/* CTA Buttons */}
           <div className="hidden md:flex items-center gap-4">
             <Link to="/login">
-              <Button variant="ghost" className="text-gray-300 hover:text-white hover:bg-white/5">Sign In</Button>
+              <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                Login
+              </Button>
             </Link>
-            <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
-              Get Started
-            </Button>
           </div>
 
           {/* Mobile Menu Button */}
@@ -72,7 +154,7 @@ export function Header() {
         {/* Mobile Menu */}
         {mobileMenuOpen && (
           <div className="md:hidden py-4 border-t border-gray-800">
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-3">
               <Link 
                 to="/" 
                 className={`transition-colors ${isActive('/') ? 'text-blue-400 font-medium' : 'text-gray-300 hover:text-white'}`}
@@ -85,29 +167,85 @@ export function Header() {
                 className={`transition-colors ${isActive('/about') ? 'text-blue-400 font-medium' : 'text-gray-300 hover:text-white'}`}
                 onClick={() => setMobileMenuOpen(false)}
               >
-                About
+                About Us
               </Link>
+
+              <Link 
+                to="/services" 
+                className={`transition-colors ${isActive('/services') ? 'text-blue-400 font-medium' : 'text-gray-300 hover:text-white'}`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Services
+              </Link>
+
+              {/* Mobile Educational Concepts */}
+              <div>
+                <button
+                  className={`flex items-center justify-between w-full transition-colors ${
+                    location.pathname.startsWith('/educational')
+                      ? 'text-blue-400 font-medium'
+                      : 'text-gray-300 hover:text-white'
+                  }`}
+                  onClick={() => setMobileEducationalOpen(!mobileEducationalOpen)}
+                >
+                  Educational Concepts
+                  <ChevronDown className={`w-4 h-4 transition-transform ${mobileEducationalOpen ? 'rotate-180' : ''}`} />
+                </button>
+                {mobileEducationalOpen && (
+                  <div className="ml-4 mt-2 flex flex-col gap-2">
+                    {educationalLinks.map((link) => (
+                      <Link
+                        key={link.path}
+                        to={link.path}
+                        className={`transition-colors text-sm ${
+                          isActive(link.path)
+                            ? 'text-blue-400 font-medium'
+                            : 'text-gray-400 hover:text-white'
+                        }`}
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        • {link.name}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               <Link 
                 to="/pricing" 
                 className={`transition-colors ${isActive('/pricing') ? 'text-blue-400 font-medium' : 'text-gray-300 hover:text-white'}`}
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Pricing
+                Subscription
+              </Link>
+              <Link 
+                to="/disclaimer" 
+                className={`transition-colors ${isActive('/disclaimer') ? 'text-blue-400 font-medium' : 'text-gray-300 hover:text-white'}`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Disclaimer
+              </Link>
+              <Link 
+                to="/risk-disclosure" 
+                className={`transition-colors ${isActive('/risk-disclosure') ? 'text-blue-400 font-medium' : 'text-gray-300 hover:text-white'}`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Risk Disclosure
               </Link>
               <Link 
                 to="/contact" 
                 className={`transition-colors ${isActive('/contact') ? 'text-blue-400 font-medium' : 'text-gray-300 hover:text-white'}`}
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Contact
+                Contact Us
               </Link>
-              <div className="flex flex-col gap-2 pt-4 border-t border-gray-800">
+
+              <div className="pt-4 border-t border-gray-800">
                 <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
-                  <Button variant="outline" className="w-full border-gray-700 text-gray-300 hover:bg-white/5">Sign In</Button>
+                  <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                    Login
+                  </Button>
                 </Link>
-                <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
-                  Get Started
-                </Button>
               </div>
             </div>
           </div>

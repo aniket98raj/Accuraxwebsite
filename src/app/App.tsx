@@ -3,10 +3,20 @@ import { Header } from "./components/Header";
 import { Footer } from "./components/Footer";
 import { Home } from "./pages/Home";
 import { About } from "./pages/About";
+import { Services } from "./pages/Services";
 import { Pricing } from "./pages/Pricing";
 import { Contact } from "./pages/Contact";
 import { Login } from "./pages/Login";
+import { Disclaimer } from "./pages/Disclaimer";
+import { RiskDisclosure } from "./pages/RiskDisclosure";
+import { PrivacyPolicy } from "./pages/PrivacyPolicy";
+import { TermsOfService } from "./pages/TermsOfService";
+import { CookiePolicy } from "./pages/CookiePolicy";
+import { Godzilla } from "./pages/educational/Godzilla";
+import { Wolf } from "./pages/educational/Wolf";
+import { Turtle } from "./pages/educational/Turtle";
 
+// AccuraX Trading Platform App Component
 export default function App() {
   return (
     <BrowserRouter>
@@ -25,8 +35,19 @@ export default function App() {
                   <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/about" element={<About />} />
+                    <Route path="/services" element={<Services />} />
                     <Route path="/pricing" element={<Pricing />} />
                     <Route path="/contact" element={<Contact />} />
+                    <Route path="/disclaimer" element={<Disclaimer />} />
+                    <Route path="/risk-disclosure" element={<RiskDisclosure />} />
+                    <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                    <Route path="/terms-of-service" element={<TermsOfService />} />
+                    <Route path="/cookie-policy" element={<CookiePolicy />} />
+                    
+                    {/* Educational Concepts Routes */}
+                    <Route path="/educational/godzilla" element={<Godzilla />} />
+                    <Route path="/educational/wolf" element={<Wolf />} />
+                    <Route path="/educational/turtle" element={<Turtle />} />
                   </Routes>
                 </main>
                 <Footer />

@@ -1,26 +1,27 @@
 import { Card } from "./ui/card";
 import { Star } from "lucide-react";
+import { ImageWithFallback } from "./figma/ImageWithFallback";
 
 const testimonials = [
   {
     name: "Sarah Johnson",
-    role: "Day Trader",
+    role: "Trading Student",
     image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop",
-    content: "AccuraX has completely transformed my trading strategy. The AI-powered insights are incredibly accurate, and I've seen a 45% increase in my returns.",
+    content: "AccuraX has completely transformed my understanding of trading concepts. The educational framework is incredibly comprehensive, and I've gained valuable knowledge about risk management and probability-based strategies.",
     rating: 5
   },
   {
     name: "Michael Chen",
-    role: "Hedge Fund Manager",
+    role: "Learning Enthusiast",
     image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop",
-    content: "The algorithmic trading capabilities are best-in-class. We've been using AccuraX for our firm, and the execution speed and reliability are outstanding.",
+    content: "The platform's approach to teaching capital discipline and risk structure is unmatched. AccuraX focuses on concepts and education, which is exactly what I was looking for.",
     rating: 5
   },
   {
     name: "Emily Rodriguez",
-    role: "Swing Trader",
+    role: "Educational Subscriber",
     image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop",
-    content: "As someone new to algorithmic trading, AccuraX made it incredibly easy to get started. The educational resources and support team are top-notch.",
+    content: "What sets AccuraX apart is their commitment to education over everything else. The hypothetical examples and probability theory lessons have been invaluable for my learning journey.",
     rating: 5
   }
 ];
@@ -57,7 +58,7 @@ export function Testimonials() {
               </p>
 
               <div className="flex items-center gap-3">
-                <img 
+                <ImageWithFallback
                   src={testimonial.image} 
                   alt={testimonial.name}
                   className="w-12 h-12 rounded-full object-cover ring-2 ring-gray-800"
