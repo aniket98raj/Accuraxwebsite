@@ -10,14 +10,35 @@ export function NewHero() {
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl"></div>
       
       <div className="max-w-7xl mx-auto relative z-10">
+        {/* Trusted Badge - Centered at top */}
+        <div className="flex justify-center mb-8">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/10 text-blue-400 rounded-full text-sm border border-blue-500/20">
+            <CheckCircle className="w-4 h-4" />
+            <span>Trusted by 10,000+ Active Traders</span>
+          </div>
+        </div>
+        
+        {/* New Content - Centered */}
+        <div className="text-center mb-12">
+          {/* Headline */}
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 leading-tight">
+            Where Probability Meets Financial Discipline
+          </h1>
+          
+          {/* Subheading */}
+          <p className="text-lg md:text-xl text-gray-300 mb-4 leading-relaxed max-w-4xl mx-auto">
+            A probability-based approach to risk and money management—designed to eliminate emotion and enforce consistency.
+          </p>
+          
+          {/* Supporting Line */}
+          <p className="text-base md:text-lg text-blue-400 italic font-semibold">
+            Because survival comes before returns.
+          </p>
+        </div>
+        
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left Side - Tagline */}
           <div>
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/10 text-blue-400 rounded-full text-sm border border-blue-500/20 mb-8">
-              <CheckCircle className="w-4 h-4" />
-              <span>Trusted by 10,000+ Active Traders</span>
-            </div>
-            
             <div className="space-y-6">
               {/* First Line */}
               <div className="bg-gradient-to-r from-blue-500/10 to-transparent p-6 rounded-xl border-l-4 border-blue-500">
