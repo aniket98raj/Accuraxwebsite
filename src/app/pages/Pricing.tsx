@@ -4,61 +4,57 @@ import { Check } from "lucide-react";
 
 const plans = [
   {
-    name: "Starter",
-    price: "49",
-    description: "Perfect for individual traders getting started",
+    name: "GODZILLA",
+    emoji: "🦖",
+    subtitle: "High Risk Growth Model",
+    price: "399",
+    description: "For aggressive traders seeking high-risk, fast growth opportunities",
     features: [
-      "5 Active strategies",
-      "Basic backtesting",
-      "1 Broker connection",
-      "Email support",
-      "Real-time alerts",
-      "Mobile app access",
-      "Strategy marketplace access",
-      "Historical data (1 year)"
+      "Rule-based Money Management System",
+      "Fixed 3% risk per trade",
+      "Designed to work with ~55% probability of success",
+      "Uses positive risk-reward structure",
+      "Higher probability helps maintain consistency",
+      "Can be profitable due to discipline + compounding logic",
+      "Suitable for high-risk, fast-growth traders"
     ],
+    disclaimer: "Performance is probability-based, not guaranteed.",
     popular: false
   },
   {
-    name: "Professional",
-    price: "149",
-    description: "For serious traders who need advanced features",
+    name: "WOLF",
+    emoji: "🐺",
+    subtitle: "Loss Recovery Model",
+    price: "499",
+    description: "Balanced approach with structured loss recovery for medium-risk traders",
     features: [
-      "Unlimited strategies",
-      "Advanced backtesting",
-      "3 Broker connections",
-      "Priority support",
-      "Real-time alerts",
-      "Mobile app access",
-      "Strategy marketplace access",
-      "Historical data (5 years)",
-      "Custom indicators",
-      "API access",
-      "Advanced analytics",
-      "Paper trading"
+      "Structured Loss Recovery Money Management System",
+      "Designed around ~50% probability",
+      "Concept: In a set of 6 trades, 1 winning trade can cover all previous losses and generate net profit",
+      "Uses predefined recovery rules (no emotional decisions)",
+      "Focus on capital recovery + controlled growth",
+      "Medium risk, rule-driven execution",
+      "Best for traders who want balance between risk and safety"
     ],
+    disclaimer: "Recovery works on probability and execution discipline, not certainty.",
     popular: true
   },
   {
-    name: "Enterprise",
-    price: "499",
-    description: "For professional trading firms and institutions",
+    name: "TURTLE",
+    emoji: "🐢",
+    subtitle: "Capital Protection Model",
+    price: "599",
+    description: "Conservative approach prioritizing capital protection and stable growth",
     features: [
-      "Unlimited strategies",
-      "Enterprise backtesting",
-      "Unlimited broker connections",
-      "24/7 Dedicated support",
-      "Real-time alerts",
-      "Mobile app access",
-      "Strategy marketplace access",
-      "Historical data (10+ years)",
-      "Custom indicators",
-      "Full API access",
-      "White-label solutions",
-      "Custom integrations",
-      "Dedicated account manager",
-      "On-premise deployment option"
+      "Conservative Capital Protection Money Management System",
+      "Designed to work with ~22.22% probability (around 2 wins in 9 trades, wins can occur randomly)",
+      "Uses high reward vs low risk structure",
+      "Even with ~30% probability, system can be net profitable",
+      "Losses remain small, wins are relatively larger",
+      "Focus on slow, steady and stable growth",
+      "Ideal for patient, low-risk traders"
     ],
+    disclaimer: "This model focuses on survival and long-term probability, not frequent wins.",
     popular: false
   }
 ];
@@ -75,9 +71,6 @@ export function Pricing() {
           <h1 className="text-5xl font-bold text-white mb-6">
             Choose Your <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">Perfect Plan</span>
           </h1>
-          <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-            Start with a 14-day free trial. No credit card required. Cancel anytime.
-          </p>
         </div>
 
         {/* Pricing Cards */}
@@ -98,22 +91,33 @@ export function Pricing() {
               )}
               
               <div className="text-center mb-8">
-                <h3 className="text-2xl font-bold text-white mb-2">{plan.name}</h3>
+                <div className="text-5xl mb-3">{plan.emoji}</div>
+                <h3 className="text-2xl font-bold text-white mb-1">{plan.name}</h3>
+                <p className="text-blue-400 text-sm font-semibold mb-3">{plan.subtitle}</p>
                 <p className="text-gray-400 text-sm mb-4">{plan.description}</p>
                 <div className="flex items-baseline justify-center gap-2">
-                  <span className="text-5xl font-bold text-white">${plan.price}</span>
+                  <span className="text-gray-400 text-sm">₹</span>
+                  <span className="text-5xl font-bold text-white">{plan.price}</span>
                   <span className="text-gray-400">/month</span>
                 </div>
+                <p className="text-xs text-gray-500 mt-1">Excluding taxes</p>
               </div>
 
-              <ul className="space-y-4 mb-8">
+              <ul className="space-y-4 mb-6">
                 {plan.features.map((feature, idx) => (
                   <li key={idx} className="flex items-start gap-3">
                     <Check className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-                    <span className="text-gray-300">{feature}</span>
+                    <span className="text-gray-300 text-sm">{feature}</span>
                   </li>
                 ))}
               </ul>
+
+              {/* Disclaimer */}
+              <div className="mb-6 p-3 bg-gray-900/50 border border-gray-800 rounded-lg">
+                <p className="text-xs text-gray-400 italic text-center">
+                  {plan.disclaimer}
+                </p>
+              </div>
 
               <Button 
                 className={`w-full ${
@@ -123,115 +127,89 @@ export function Pricing() {
                 }`}
                 size="lg"
               >
-                {plan.popular ? 'Start Free Trial' : 'Get Started'}
+                Get Started
               </Button>
             </Card>
           ))}
         </div>
 
-        {/* Educational Disclaimer */}
+        {/* What You Get Section */}
         <div className="mb-16 max-w-5xl mx-auto">
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-blue-500/5 p-[2px]">
-            <div className="relative bg-black rounded-3xl p-12 text-center">
-              <div className="max-w-3xl mx-auto space-y-6">
-                <p className="text-2xl text-gray-200 leading-relaxed whitespace-nowrap">
-                  Monthly subscription provides access to educational{" "}
-                  <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent font-semibold">
-                    concept
-                  </span>{" "}
-                  materials only.
-                </p>
-                
-                <div className="h-px bg-gradient-to-r from-transparent via-gray-700 to-transparent my-8" />
-                
-                <div className="space-y-4">
-                  <p className="text-xl text-gray-300">
-                    No{" "}
-                    <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent font-semibold">
-                      concept
-                    </span>{" "}
-                    represents a trading strategy.
-                  </p>
-                  <p className="text-xl text-gray-300">
-                    No returns are promised.
-                  </p>
-                  <p className="text-xl text-gray-300">
-                    Learning purpose only.
-                  </p>
+          <div className="bg-black border border-gray-800 rounded-2xl p-10">
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="flex items-start gap-4 p-4 bg-gray-900/30 border border-gray-800 rounded-lg">
+                <Check className="w-6 h-6 text-blue-400 flex-shrink-0 mt-1" />
+                <div>
+                  <h4 className="text-white font-semibold mb-1">Money Management Calculation Tools</h4>
+                  <p className="text-gray-400 text-sm">Professional tools to calculate your position sizes and risk</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start gap-4 p-4 bg-gray-900/30 border border-gray-800 rounded-lg">
+                <Check className="w-6 h-6 text-blue-400 flex-shrink-0 mt-1" />
+                <div>
+                  <h4 className="text-white font-semibold mb-1">Probability & Maths-Based Risk Framework</h4>
+                  <p className="text-gray-400 text-sm">Learn probability theory applied to trading decisions</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start gap-4 p-4 bg-gray-900/30 border border-gray-800 rounded-lg">
+                <Check className="w-6 h-6 text-blue-400 flex-shrink-0 mt-1" />
+                <div>
+                  <h4 className="text-white font-semibold mb-1">Exact Amount Calculation Per Trade</h4>
+                  <p className="text-gray-400 text-sm">Know exactly how much to risk on each trade</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start gap-4 p-4 bg-gray-900/30 border border-gray-800 rounded-lg">
+                <Check className="w-6 h-6 text-blue-400 flex-shrink-0 mt-1" />
+                <div>
+                  <h4 className="text-white font-semibold mb-1">Educational Explanation of How the System Works</h4>
+                  <p className="text-gray-400 text-sm">Complete documentation and learning materials</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start gap-4 p-4 bg-gray-900/30 border border-gray-800 rounded-lg md:col-span-2">
+                <Check className="w-6 h-6 text-blue-400 flex-shrink-0 mt-1" />
+                <div>
+                  <h4 className="text-white font-semibold mb-1">Rule-Based Structure to Avoid Emotional Trading</h4>
+                  <p className="text-gray-400 text-sm">Systematic approach to eliminate emotional decision-making</p>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* FAQ Section */}
-        <div className="max-w-3xl mx-auto">
-          <h2 className="text-3xl font-bold text-white text-center mb-12">
-            Frequently Asked Questions
-          </h2>
-          
-          <div className="space-y-6">
-            <div className="bg-black border border-gray-800 rounded-xl p-6">
-              <h3 className="text-lg font-bold text-white mb-2">Can I change my plan later?</h3>
-              <p className="text-gray-400">
-                Yes! You can upgrade or downgrade your plan at any time. Changes will be reflected in your next billing cycle.
+        {/* Smart Money Management Tools Section */}
+        <div className="mb-16 max-w-4xl mx-auto">
+          <div className="bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-blue-500/5 border border-blue-500/20 rounded-2xl p-10">
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+              Smart Money Management Tools
+            </h2>
+            <p className="text-xl md:text-2xl italic text-gray-300 mb-8">
+              (Education • Maths • Probability Based)
+            </p>
+            <div className="space-y-4 text-lg text-gray-200 mb-8">
+              <p>
+                We provide <span className="font-bold text-white">money management tools</span> built on{" "}
+                <span className="font-bold text-white">mathematics, probability, and risk control</span>. 
+                These tools <span className="font-bold text-white">do not tell you what to buy or sell</span>. 
+                They only calculate <span className="font-bold text-white">how much amount to use per trade</span>, based on a selected model.
               </p>
             </div>
-
-            <div className="bg-black border border-gray-800 rounded-xl p-6">
-              <h3 className="text-lg font-bold text-white mb-2">What payment methods do you accept?</h3>
-              <p className="text-gray-400">
-                We accept all major credit cards (Visa, MasterCard, American Express) and PayPal for monthly subscriptions.
-              </p>
-            </div>
-
-            <div className="bg-black border border-gray-800 rounded-xl p-6">
-              <h3 className="text-lg font-bold text-white mb-2">Is there a setup fee?</h3>
-              <p className="text-gray-400">
-                No setup fees. What you see is what you pay. All plans come with full access during the 14-day free trial.
-              </p>
-            </div>
-
-            <div className="bg-black border border-gray-800 rounded-xl p-6">
-              <h3 className="text-lg font-bold text-white mb-2">Can I cancel anytime?</h3>
-              <p className="text-gray-400">
-                Absolutely. You can cancel your subscription at any time with no questions asked. Your access will continue until the end of your billing period.
-              </p>
-            </div>
-
-            <div className="bg-black border border-gray-800 rounded-xl p-6">
-              <h3 className="text-lg font-bold text-white mb-2">Do you offer annual billing?</h3>
-              <p className="text-gray-400">
-                Yes! Contact our sales team for annual billing options and receive up to 20% discount on all plans.
-              </p>
+            <div className="flex flex-wrap items-center gap-6 justify-center">
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">👉</span>
+                <p className="text-xl text-gray-200">No tips. No calls. No guarantees.</p>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">👉</span>
+                <p className="text-xl text-gray-200">Only <span className="font-bold text-white">logic, discipline, and tools</span>.</p>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* CTA Section */}
-        <div className="mt-16 text-center bg-gradient-to-r from-blue-600/10 to-purple-600/10 border border-blue-500/20 rounded-2xl p-12">
-          <h2 className="text-3xl font-bold text-white mb-4">
-            Still have questions?
-          </h2>
-          <p className="text-xl text-gray-400 mb-8 max-w-2xl mx-auto">
-            Our team is here to help you choose the right plan for your trading needs.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button 
-              size="lg" 
-              variant="outline"
-              className="border-gray-700 text-gray-300 hover:bg-white/5"
-            >
-              Schedule a Demo
-            </Button>
-            <Button 
-              size="lg"
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-            >
-              Contact Sales
-            </Button>
-          </div>
-        </div>
       </div>
     </div>
   );
