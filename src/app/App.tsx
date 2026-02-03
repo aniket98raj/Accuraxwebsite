@@ -15,6 +15,7 @@ import { CookiePolicy } from "./pages/CookiePolicy";
 import { Godzilla } from "./pages/educational/Godzilla";
 import { Wolf } from "./pages/educational/Wolf";
 import { Turtle } from "./pages/educational/Turtle";
+import { GodzillaDashboard } from "./pages/GodzillaDashboard";
 
 // AccuraX Trading Platform App Component
 export default function App() {
@@ -48,6 +49,9 @@ export default function App() {
                     <Route path="/educational/godzilla" element={<Godzilla />} />
                     <Route path="/educational/wolf" element={<Wolf />} />
                     <Route path="/educational/turtle" element={<Turtle />} />
+                    
+                    {/* Dashboard Routes */}
+                    <Route path="/dashboard/godzilla" element={<GodzillaDashboard />} />
                   </Routes>
                 </main>
                 <Footer />

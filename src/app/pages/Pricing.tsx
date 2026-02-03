@@ -1,6 +1,7 @@
 import { Button } from "../components/ui/button";
 import { Card } from "../components/ui/card";
 import { Check } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const plans = [
   {
@@ -60,6 +61,8 @@ const plans = [
 ];
 
 export function Pricing() {
+  const navigate = useNavigate();
+
   return (
     <div className="pt-24 pb-16 px-4 sm:px-6 lg:px-8 bg-black">
       <div className="max-w-7xl mx-auto">
@@ -126,9 +129,20 @@ export function Pricing() {
                     : 'bg-white/5 hover:bg-white/10 text-white border border-gray-800'
                 }`}
                 size="lg"
+                onClick={() => navigate('/signup')}
               >
                 Get Started
               </Button>
+              
+              {/* Try Dashboard Link */}
+              {plan.name === "GODZILLA" && (
+                <button
+                  onClick={() => navigate('/dashboard/godzilla')}
+                  className="w-full mt-3 text-sm text-blue-400 hover:text-blue-300 underline"
+                >
+                  Try Dashboard Demo →
+                </button>
+              )}
             </Card>
           ))}
         </div>
