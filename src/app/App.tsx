@@ -16,6 +16,8 @@ import { Godzilla } from "./pages/educational/Godzilla";
 import { Wolf } from "./pages/educational/Wolf";
 import { Turtle } from "./pages/educational/Turtle";
 import { GodzillaDashboard } from "./pages/GodzillaDashboard";
+import { WolfDashboard } from "./pages/WolfDashboard";
+import { TurtleDashboard } from "./pages/TurtleDashboard";
 
 // AccuraX Trading Platform App Component
 export default function App() {
@@ -52,6 +54,8 @@ export default function App() {
                     
                     {/* Dashboard Routes */}
                     <Route path="/dashboard/godzilla" element={<GodzillaDashboard />} />
+                    <Route path="/dashboard/wolf" element={<WolfDashboard />} />
+                    <Route path="/dashboard/turtle" element={<TurtleDashboard />} />
                   </Routes>
                 </main>
                 <Footer />

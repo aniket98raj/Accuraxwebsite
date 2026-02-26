@@ -10,6 +10,7 @@ interface Trade {
   riskReward: number;
   profit: number;
   timestamp: Date;
+  cumulativeLoss: number; // Track accumulated losses before this trade
 }
 
 interface Session {
@@ -23,27 +24,27 @@ interface Session {
   losses: number;
   winRate: number;
   riskPercent: number;
-  targetCapital?: number;
   completionReason: "trades_completed" | "target_reached";
   timestamp: Date;
 }
 
-export function GodzillaDashboard() {
+export function WolfDashboard() {
   const [totalPool, setTotalPool] = useState<number>(0); // Total available funds
   const [capital, setCapital] = useState<number>(0); // Capital allocated to trading session
   const [currentCapital, setCurrentCapital] = useState<number>(0); // Reserved capital (not in session)
   const [trades, setTrades] = useState<Trade[]>([]);
   const [tradeAmount, setTradeAmount] = useState<number>(0);
-  const [riskPercent, setRiskPercent] = useState<number>(0);
-  const [totalAllocation] = useState<number>(30);
-  const [winProbability] = useState<number>(55);
+  const [riskPercent] = useState<number>(1.028); // Fixed risk percentage
+  const [payout] = useState<number>(0.82); // Fixed payout ratio
+  const [winProbability] = useState<number>(50);
   const [sessionHistory, setSessionHistory] = useState<Session[]>([]);
   const [sessionStarted, setSessionStarted] = useState<boolean>(false);
   const [sessionStartCapital, setSessionStartCapital] = useState<number>(0);
   const [sessionRiskPercent, setSessionRiskPercent] = useState<number>(0);
-  const [enableTargetCapital, setEnableTargetCapital] = useState<boolean>(false);
-  const [targetCapital, setTargetCapital] = useState<number>(0);
-  const [targetPercent, setTargetPercent] = useState<number>(0);
+  const [cumulativeLoss, setCumulativeLoss] = useState<number>(0); // Track accumulated losses
+  const [totalWins, setTotalWins] = useState<number>(0); // Track total wins in session
+  const [totalLosses, setTotalLosses] = useState<number>(0); // Track total losses in session
+  const [consecutiveLosses, setConsecutiveLosses] = useState<number>(0); // Track consecutive losses (resets on win)
   const [showTutorial, setShowTutorial] = useState<boolean>(false);
 
   // Calculate statistics
@@ -53,24 +54,34 @@ export function GodzillaDashboard() {
   const winRate = completedTrades.length > 0 ? (wins / completedTrades.length) * 100 : 0;
   const totalProfit = trades.reduce((sum, t) => sum + t.profit, 0);
 
-  // Calculate risk amount based on capital input (not currentCapital)
-  const riskAmount = capital * (riskPercent / 100);
+  // Calculate base risk amount from current capital (not starting capital)
+  const baseRiskAmount = capital * (riskPercent / 100);
+  
+  // Calculate base profit (what we'd earn on a win with base risk)
+  const baseProfit = baseRiskAmount * payout;
+
+  // Calculate next risk amount based on Martingale strategy
+  const calculateNextRisk = () => {
+    if (cumulativeLoss === 0) {
+      // No losses to recover, use base risk
+      return baseRiskAmount;
+    }
+    // Martingale formula: (accumulated losses + desired profit) ÷ payout
+    return (cumulativeLoss + baseProfit) / payout;
+  };
+
+  const riskAmount = calculateNextRisk();
 
   useEffect(() => {
     setTradeAmount(riskAmount);
   }, [riskAmount]);
 
-  // Check if session should end
+  // Check if session should end when 6 wins are achieved OR 6 consecutive losses occur
   useEffect(() => {
-    if (sessionStarted) {
-      const shouldEndByTrades = trades.length >= totalAllocation;
-      const shouldEndByTarget = enableTargetCapital && capital >= targetCapital;
-
-      if (shouldEndByTrades || shouldEndByTarget) {
-        endSession(shouldEndByTarget ? "target_reached" : "trades_completed");
-      }
+    if (sessionStarted && (totalWins >= 6 || consecutiveLosses >= 6)) {
+      endSession("trades_completed");
     }
-  }, [trades, capital, sessionStarted]);
+  }, [totalWins, consecutiveLosses, sessionStarted]);
 
   const startSession = () => {
     setSessionStarted(true);
@@ -93,7 +104,6 @@ export function GodzillaDashboard() {
       losses,
       winRate,
       riskPercent: sessionRiskPercent,
-      targetCapital: enableTargetCapital ? targetCapital : undefined,
       completionReason: reason,
       timestamp: new Date()
     };
@@ -101,44 +111,60 @@ export function GodzillaDashboard() {
     setSessionHistory([newSession, ...sessionHistory]);
     setSessionStarted(false);
     
-    // Reset all fields for new session - set current capital to 0
+    // Reset all fields for new session
     setTotalPool(0);
     setCurrentCapital(0);
     setCapital(0);
-    setRiskPercent(0);
-    setEnableTargetCapital(false);
-    setTargetCapital(0);
-    setTargetPercent(0);
     setTrades([]);
+    setCumulativeLoss(0);
+    setSessionStartCapital(0);
+    setSessionRiskPercent(0);
+    setTotalWins(0);
+    setTotalLosses(0);
+    setConsecutiveLosses(0);
   };
 
   const executeTrade = (outcome: "win" | "loss") => {
-    // Use current values for the first trade, or locked session values for subsequent trades
-    const activeRiskPercent = sessionStarted ? sessionRiskPercent : riskPercent;
-    const activeCapital = capital;
-
-    const riskAmountForTrade = activeCapital * (activeRiskPercent / 100);
-    // Win gives 85% of risk amount, Loss gives -100% of risk amount
-    const profit = outcome === "win" ? riskAmountForTrade * 0.85 : -riskAmountForTrade;
-    
-    const newTrade: Trade = {
-      id: Date.now(),
-      amount: riskAmountForTrade,
-      outcome,
-      riskReward: 0.85, // 85% profit on wins
-      profit,
-      timestamp: new Date()
-    };
-
-    const updatedTrades = [newTrade, ...trades];
-    setTrades(updatedTrades);
-    setCapital(capital + profit); // Update capital directly with profit/loss
-
     // If this is the first trade, start the session
     if (!sessionStarted) {
       setSessionStarted(true);
       setSessionStartCapital(capital);
       setSessionRiskPercent(riskPercent);
+    }
+
+    // Use the calculated risk amount for this trade
+    const riskAmountForTrade = riskAmount;
+    
+    // Calculate profit based on outcome
+    // Win: profit = risk amount × payout (0.82)
+    // Loss: loss = -risk amount
+    const profit = outcome === "win" ? riskAmountForTrade * payout : -riskAmountForTrade;
+    
+    const newTrade: Trade = {
+      id: Date.now(),
+      amount: riskAmountForTrade,
+      outcome,
+      riskReward: payout,
+      profit,
+      timestamp: new Date(),
+      cumulativeLoss: cumulativeLoss
+    };
+
+    const updatedTrades = [newTrade, ...trades];
+    setTrades(updatedTrades);
+    setCapital(capital + profit); // Update capital with profit/loss
+
+    // Update cumulative loss tracker based on Martingale logic
+    if (outcome === "win") {
+      // Win resets the cumulative loss to 0
+      setCumulativeLoss(0);
+      setTotalWins(prev => prev + 1);
+      setConsecutiveLosses(0); // Reset consecutive losses on win
+    } else {
+      // Loss adds to cumulative loss
+      setCumulativeLoss(cumulativeLoss + riskAmountForTrade);
+      setTotalLosses(prev => prev + 1);
+      setConsecutiveLosses(prev => prev + 1); // Increment consecutive losses on loss
     }
   };
 
@@ -148,13 +174,13 @@ export function GodzillaDashboard() {
     setTotalPool(0);
     setCurrentCapital(0);
     setCapital(0);
-    setRiskPercent(0);
-    setEnableTargetCapital(false);
-    setTargetCapital(0);
-    setTargetPercent(0);
     setTrades([]);
     setSessionStartCapital(0);
     setSessionRiskPercent(0);
+    setCumulativeLoss(0);
+    setTotalWins(0);
+    setTotalLosses(0);
+    setConsecutiveLosses(0);
   };
 
   return (
@@ -164,10 +190,10 @@ export function GodzillaDashboard() {
         <div className="mb-8">
           <div className="flex items-center justify-between gap-3 mb-4">
             <div className="flex items-center gap-3">
-              <span className="text-5xl">🦖</span>
+              <span className="text-5xl">🐺</span>
               <div>
-                <h1 className="text-4xl font-bold text-white">GODZILLA Dashboard</h1>
-                <p className="text-blue-400 text-lg">High Risk Growth Model</p>
+                <h1 className="text-4xl font-bold text-white">WOLF Dashboard</h1>
+                <p className="text-blue-400 text-lg">Balanced Growth Model</p>
               </div>
             </div>
             
@@ -199,19 +225,19 @@ export function GodzillaDashboard() {
         </div>
 
         {/* Statistics Grid */}
-        <div className="grid grid-cols-3 lg:grid-cols-6 gap-3 mb-8">
+        <div className="flex gap-3 mb-8 overflow-x-auto pb-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           {/* Total Allocation */}
-          <Card className="p-3 lg:p-4 bg-gradient-to-br from-blue-500/10 to-purple-500/10 border-blue-500/30 hover:border-blue-500/50 transition-all">
+          <Card className="p-3 lg:p-4 bg-gradient-to-br from-blue-500/10 to-purple-500/10 border-blue-500/30 hover:border-blue-500/50 transition-all flex-shrink-0 w-40 lg:w-48">
             <div className="flex flex-col gap-1">
               <Target className="w-4 h-4 lg:w-5 lg:h-5 text-blue-400 mb-1" />
               <p className="text-[10px] lg:text-xs text-gray-400 leading-tight">Current Session</p>
-              <p className="text-xl lg:text-3xl font-bold text-white">{totalAllocation - trades.length}</p>
-              <p className="text-[9px] lg:text-xs text-gray-500">Trades left</p>
+              <p className="text-xl lg:text-3xl font-bold text-white">{trades.length}</p>
+              <p className="text-[9px] lg:text-xs text-gray-500">Trades Completed</p>
             </div>
           </Card>
 
           {/* Probability Percentage */}
-          <Card className="p-3 lg:p-4 bg-gradient-to-br from-green-500/10 to-emerald-500/10 border-green-500/30 hover:border-green-500/50 transition-all">
+          <Card className="p-3 lg:p-4 bg-gradient-to-br from-green-500/10 to-emerald-500/10 border-green-500/30 hover:border-green-500/50 transition-all flex-shrink-0 w-40 lg:w-48">
             <div className="flex flex-col gap-1">
               <Percent className="w-4 h-4 lg:w-5 lg:h-5 text-green-400 mb-1" />
               <p className="text-[10px] lg:text-xs text-gray-400 leading-tight">Win Probability</p>
@@ -221,7 +247,7 @@ export function GodzillaDashboard() {
           </Card>
 
           {/* Actual Win Rate */}
-          <Card className="p-3 lg:p-4 bg-gradient-to-br from-purple-500/10 to-pink-500/10 border-purple-500/30 hover:border-purple-500/50 transition-all">
+          <Card className="p-3 lg:p-4 bg-gradient-to-br from-purple-500/10 to-pink-500/10 border-purple-500/30 hover:border-purple-500/50 transition-all flex-shrink-0 w-40 lg:w-48">
             <div className="flex flex-col gap-1">
               <Activity className="w-4 h-4 lg:w-5 lg:h-5 text-purple-400 mb-1" />
               <p className="text-[10px] lg:text-xs text-gray-400 leading-tight">Actual Win Rate</p>
@@ -230,8 +256,20 @@ export function GodzillaDashboard() {
             </div>
           </Card>
 
+          {/* Risk Tracker */}
+          <Card className="p-3 lg:p-4 bg-gradient-to-br from-orange-500/10 to-red-500/10 border-orange-500/30 hover:border-orange-500/50 transition-all flex-shrink-0 w-40 lg:w-48">
+            <div className="flex flex-col gap-1">
+              <Activity className="w-4 h-4 lg:w-5 lg:h-5 text-orange-400 mb-1" />
+              <p className="text-[10px] lg:text-xs text-gray-400 leading-tight">Risk Tracker</p>
+              <p className="text-xl lg:text-3xl font-bold text-white">
+                {consecutiveLosses}|{Math.max(0, 6 - consecutiveLosses)}
+              </p>
+              <p className="text-[9px] lg:text-xs text-gray-500">Loss|Capacity</p>
+            </div>
+          </Card>
+
           {/* Positive Outcomes */}
-          <Card className="p-3 lg:p-4 bg-gradient-to-br from-green-500/10 to-teal-500/10 border-green-500/30 hover:border-green-500/50 transition-all">
+          <Card className="p-3 lg:p-4 bg-gradient-to-br from-green-500/10 to-teal-500/10 border-green-500/30 hover:border-green-500/50 transition-all flex-shrink-0 w-40 lg:w-48">
             <div className="flex flex-col gap-1">
               <TrendingUp className="w-4 h-4 lg:w-5 lg:h-5 text-green-400 mb-1" />
               <p className="text-[10px] lg:text-xs text-gray-400 leading-tight">Winning Trades</p>
@@ -241,7 +279,7 @@ export function GodzillaDashboard() {
           </Card>
 
           {/* Negative Outcomes */}
-          <Card className="p-3 lg:p-4 bg-gradient-to-br from-red-500/10 to-orange-500/10 border-red-500/30 hover:border-red-500/50 transition-all">
+          <Card className="p-3 lg:p-4 bg-gradient-to-br from-red-500/10 to-orange-500/10 border-red-500/30 hover:border-red-500/50 transition-all flex-shrink-0 w-40 lg:w-48">
             <div className="flex flex-col gap-1">
               <TrendingDown className="w-4 h-4 lg:w-5 lg:h-5 text-red-400 mb-1" />
               <p className="text-[10px] lg:text-xs text-gray-400 leading-tight">Losing Trades</p>
@@ -251,7 +289,7 @@ export function GodzillaDashboard() {
           </Card>
 
           {/* Starting Capital */}
-          <Card className="p-3 lg:p-4 bg-gradient-to-br from-yellow-500/10 to-orange-500/10 border-yellow-500/30 hover:border-yellow-500/50 transition-all">
+          <Card className="p-3 lg:p-4 bg-gradient-to-br from-yellow-500/10 to-orange-500/10 border-yellow-500/30 hover:border-yellow-500/50 transition-all flex-shrink-0 w-40 lg:w-48">
             <div className="flex flex-col gap-1">
               <DollarSign className="w-4 h-4 lg:w-5 lg:h-5 text-yellow-400 mb-1" />
               <p className="text-[10px] lg:text-xs text-gray-400 leading-tight">Starting Capital</p>
@@ -327,37 +365,6 @@ export function GodzillaDashboard() {
                 </p>
               </div>
 
-              {/* Risk Percentage */}
-              <div>
-                <label className="block text-sm font-medium text-gray-400 mb-2">
-                  Risk Percentage
-                </label>
-                <input
-                  type="number"
-                  value={riskPercent || ''}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    if (value === '') {
-                      setRiskPercent(0);
-                      return;
-                    }
-                    const numValue = parseFloat(value);
-                    if (!isNaN(numValue) && numValue >= 0 && numValue <= 100) {
-                      setRiskPercent(numValue);
-                    }
-                  }}
-                  onWheel={(e) => e.currentTarget.blur()}
-                  step="1"
-                  min="0"
-                  max="100"
-                  className="w-full bg-gray-900 border border-gray-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                  disabled={sessionStarted}
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  {sessionStarted ? 'Locked during session' : 'Percentage of capital to risk per trade'}
-                </p>
-              </div>
-
               {/* Risk Amount */}
               <div>
                 <label className="block text-sm font-medium text-gray-400 mb-2">
@@ -365,77 +372,8 @@ export function GodzillaDashboard() {
                 </label>
                 <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg px-4 py-3">
                   <p className="text-2xl font-bold text-white">₹{riskAmount.toFixed(2)}</p>
-                  <p className="text-xs text-blue-400 mt-1">Automatically calculated as {riskPercent}% of current capital</p>
+                  <p className="text-xs text-blue-400 mt-1">Automatically calculated based on current capital</p>
                 </div>
-              </div>
-
-              {/* Target Capital (Optional) */}
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <input
-                    type="checkbox"
-                    id="enableTarget"
-                    checked={enableTargetCapital}
-                    onChange={(e) => setEnableTargetCapital(e.target.checked)}
-                    className="w-4 h-4 rounded"
-                    disabled={sessionStarted}
-                  />
-                  <label htmlFor="enableTarget" className="text-sm font-medium text-gray-400">
-                    Enable Target Capital
-                  </label>
-                </div>
-                {enableTargetCapital && (
-                  <div className="space-y-3">
-                    {/* Target Percentage Input */}
-                    <div>
-                      <label className="block text-xs text-gray-500 mb-1">
-                        Target Percentage (% of Capital)
-                      </label>
-                      <input
-                        type="number"
-                        value={targetPercent || ''}
-                        onChange={(e) => {
-                          const value = e.target.value;
-                          if (value === '') {
-                            setTargetPercent(0);
-                            setTargetCapital(0);
-                            return;
-                          }
-                          const numValue = parseFloat(value);
-                          if (!isNaN(numValue) && numValue >= 0 && numValue <= 1000) {
-                            setTargetPercent(numValue);
-                            // Calculate target capital based on percentage
-                            const calculatedTarget = capital + (capital * (numValue / 100));
-                            setTargetCapital(calculatedTarget);
-                          }
-                        }}
-                        onWheel={(e) => e.currentTarget.blur()}
-                        className="w-full bg-gray-900 border border-gray-800 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                        disabled={sessionStarted}
-                        placeholder="Enter target %"
-                      />
-                    </div>
-
-                    {/* Target Capital Display */}
-                    <div>
-                      <label className="block text-xs text-gray-500 mb-1">
-                        Target Capital (in ₹)
-                      </label>
-                      <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg px-4 py-2">
-                        <p className="text-xl font-bold text-white">₹{targetCapital.toFixed(2)}</p>
-                        <p className="text-xs text-purple-400 mt-1">
-                          {targetPercent > 0 
-                            ? `${targetPercent}% growth = +₹${(targetCapital - capital).toFixed(2)}`
-                            : 'Enter percentage to calculate target'
-                          }
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-                <p className="text-xs text-gray-500 mt-1">
-                  {enableTargetCapital ? "Session ends when target is reached or 30 trades completed" : "Session ends after 30 trades"}
-                </p>
               </div>
 
               {/* Trade Buttons */}
@@ -546,7 +484,7 @@ export function GodzillaDashboard() {
             <div className="text-center py-12">
               <History className="w-16 h-16 text-gray-600 mx-auto mb-4" />
               <p className="text-gray-500">No completed sessions yet</p>
-              <p className="text-sm text-gray-600 mt-2">Complete your first 30-trade session to see history</p>
+              <p className="text-sm text-gray-600 mt-2">Sessions are saved when target capital is reached</p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -578,7 +516,7 @@ export function GodzillaDashboard() {
                         </p>
                         <p className="text-xs text-gray-400">
                           {session.completionReason === "trades_completed" 
-                            ? "Completed 30 trades" 
+                            ? "Completed 6 winning trades" 
                             : "Target capital reached"}
                         </p>
                       </div>
@@ -620,12 +558,6 @@ export function GodzillaDashboard() {
                       <p className="text-gray-500">Losses</p>
                       <p className="text-red-400 font-medium">{session.losses}</p>
                     </div>
-                    {session.targetCapital && (
-                      <div>
-                        <p className="text-gray-500">Target Capital</p>
-                        <p className="text-white font-medium">₹{session.targetCapital.toFixed(2)}</p>
-                      </div>
-                    )}
                   </div>
                 </div>
               ))}

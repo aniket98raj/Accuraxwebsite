@@ -143,6 +143,24 @@ export function Pricing() {
                   Try Dashboard Demo →
                 </button>
               )}
+              
+              {plan.name === "WOLF" && (
+                <button
+                  onClick={() => navigate('/dashboard/wolf')}
+                  className="w-full mt-3 text-sm text-blue-400 hover:text-blue-300 underline"
+                >
+                  Try Dashboard Demo →
+                </button>
+              )}
+              
+              {plan.name === "TURTLE" && (
+                <button
+                  onClick={() => navigate('/dashboard/turtle')}
+                  className="w-full mt-3 text-sm text-blue-400 hover:text-blue-300 underline"
+                >
+                  Try Dashboard Demo →
+                </button>
+              )}
             </Card>
           ))}
         </div>
