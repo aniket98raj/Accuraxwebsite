@@ -10,18 +10,18 @@ export function Contact() {
       <div className="max-w-7xl mx-auto">
         {/* Hero Section */}
         <div className="text-center mb-16">
-          <h1 className="text-5xl font-bold text-white mb-6">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6">
             Get in <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">Touch</span>
           </h1>
-          <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+          <p className="text-lg sm:text-xl text-gray-400 max-w-3xl mx-auto">
             Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
           </p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-12">
           {/* Contact Form */}
-          <div className="bg-black p-8 rounded-2xl border border-gray-800">
-            <h2 className="text-2xl font-bold text-white mb-6">Send us a Message</h2>
+          <div className="bg-black p-6 sm:p-8 rounded-2xl border border-gray-800">
+            <h2 className="text-xl sm:text-2xl font-bold text-white mb-6">Send us a Message</h2>
             <form className="space-y-6">
               <div className="grid md:grid-cols-2 gap-6">
                 <div>

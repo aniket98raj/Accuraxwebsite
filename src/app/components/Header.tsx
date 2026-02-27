@@ -43,8 +43,8 @@ export function Header() {
           {/* Logo */}
           <div className="flex items-center">
             <Link to="/" className="flex items-center gap-2 group">
-              <LogoIcon className="w-9 h-9 transition-transform group-hover:scale-105" />
-              <span className="text-xl font-bold text-white">AccuraX</span>
+              <LogoIcon className="w-8 h-8 sm:w-9 sm:h-9 transition-transform group-hover:scale-105" />
+              <span className="text-lg sm:text-xl font-bold text-white">AccuraX</span>
             </Link>
           </div>
 

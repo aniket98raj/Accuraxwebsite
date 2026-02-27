@@ -133,6 +133,11 @@
   * These are in @layer base, so Tailwind utility classes (like text-sm, text-lg) automatically override them.
   */
 
+  html, body {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
   html {
     font-size: var(--font-size);
   }

@@ -158,26 +158,28 @@ export function GodzillaDashboard() {
   };
 
   return (
-    <div className="pt-24 pb-16 px-4 sm:px-6 lg:px-8 bg-black min-h-screen">
-      <div className="max-w-7xl mx-auto">
+    <div className="pt-24 pb-16 px-4 sm:px-6 lg:px-8 bg-black min-h-screen w-full overflow-x-hidden">
+      <div className="max-w-7xl mx-auto w-full">
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center justify-between gap-3 mb-4">
+          <div className="flex flex-col gap-4 mb-4">
+            {/* Title Section */}
             <div className="flex items-center gap-3">
               <span className="text-5xl">🦖</span>
               <div>
-                <h1 className="text-4xl font-bold text-white">GODZILLA Dashboard</h1>
-                <p className="text-blue-400 text-lg">High Risk Growth Model</p>
+                <h1 className="text-3xl sm:text-4xl font-bold text-white">GODZILLA Dashboard</h1>
+                <p className="text-blue-400 text-base sm:text-lg">High Risk Growth Model</p>
               </div>
             </div>
             
-            <div className="flex items-center gap-3">
+            {/* Buttons Section - Stack on mobile, inline on larger screens */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
               {/* Tutorial Button */}
               <Button
                 onClick={() => setShowTutorial(true)}
                 variant="outline"
                 size="sm"
-                className="border-blue-500/30 text-blue-400 hover:bg-blue-500/10 hover:text-blue-300 hover:border-blue-500/50"
+                className="border-blue-500/30 text-blue-400 hover:bg-blue-500/10 hover:text-blue-300 hover:border-blue-500/50 w-full sm:w-auto"
               >
                 <BookOpen className="w-4 h-4 mr-2" />
                 Tutorial
@@ -188,8 +190,9 @@ export function GodzillaDashboard() {
                 onClick={resetSession}
                 variant="outline"
                 size="sm"
+                type="button"
                 disabled={!sessionStarted && capital === 0 && trades.length === 0}
-                className="border-red-500/30 text-red-400 hover:bg-red-500/10 hover:text-red-300 hover:border-red-500/50 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-red-400"
+                className="border-red-500/30 text-red-400 hover:bg-red-500/10 hover:text-red-300 hover:border-red-500/50 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-red-400 w-full sm:w-auto"
               >
                 <RotateCcw className="w-4 h-4 mr-2" />
                 Reset Session
@@ -199,66 +202,66 @@ export function GodzillaDashboard() {
         </div>
 
         {/* Statistics Grid */}
-        <div className="grid grid-cols-3 lg:grid-cols-6 gap-3 mb-8">
+        <div className="grid grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3 mb-8">
           {/* Total Allocation */}
-          <Card className="p-3 lg:p-4 bg-gradient-to-br from-blue-500/10 to-purple-500/10 border-blue-500/30 hover:border-blue-500/50 transition-all">
+          <Card className="p-2 sm:p-3 lg:p-4 bg-gradient-to-br from-blue-500/10 to-purple-500/10 border-blue-500/30 hover:border-blue-500/50 transition-all">
             <div className="flex flex-col gap-1">
-              <Target className="w-4 h-4 lg:w-5 lg:h-5 text-blue-400 mb-1" />
-              <p className="text-[10px] lg:text-xs text-gray-400 leading-tight">Current Session</p>
-              <p className="text-xl lg:text-3xl font-bold text-white">{totalAllocation - trades.length}</p>
-              <p className="text-[9px] lg:text-xs text-gray-500">Trades left</p>
+              <Target className="w-4 h-4 text-blue-400 mb-1" />
+              <p className="text-[9px] sm:text-[10px] lg:text-xs text-gray-400 leading-tight">Current Session</p>
+              <p className="text-lg sm:text-xl lg:text-3xl font-bold text-white">{totalAllocation - trades.length}</p>
+              <p className="text-[8px] sm:text-[9px] lg:text-xs text-gray-500">Trades left</p>
             </div>
           </Card>
 
           {/* Probability Percentage */}
-          <Card className="p-3 lg:p-4 bg-gradient-to-br from-green-500/10 to-emerald-500/10 border-green-500/30 hover:border-green-500/50 transition-all">
+          <Card className="p-2 sm:p-3 lg:p-4 bg-gradient-to-br from-green-500/10 to-emerald-500/10 border-green-500/30 hover:border-green-500/50 transition-all">
             <div className="flex flex-col gap-1">
-              <Percent className="w-4 h-4 lg:w-5 lg:h-5 text-green-400 mb-1" />
-              <p className="text-[10px] lg:text-xs text-gray-400 leading-tight">Win Probability</p>
-              <p className="text-xl lg:text-3xl font-bold text-white">{winProbability}%</p>
-              <p className="text-[9px] lg:text-xs text-gray-500">Expected</p>
+              <Percent className="w-4 h-4 text-green-400 mb-1" />
+              <p className="text-[9px] sm:text-[10px] lg:text-xs text-gray-400 leading-tight">Win Probability</p>
+              <p className="text-lg sm:text-xl lg:text-3xl font-bold text-white">{winProbability}%</p>
+              <p className="text-[8px] sm:text-[9px] lg:text-xs text-gray-500">Expected</p>
             </div>
           </Card>
 
           {/* Actual Win Rate */}
-          <Card className="p-3 lg:p-4 bg-gradient-to-br from-purple-500/10 to-pink-500/10 border-purple-500/30 hover:border-purple-500/50 transition-all">
+          <Card className="p-2 sm:p-3 lg:p-4 bg-gradient-to-br from-purple-500/10 to-pink-500/10 border-purple-500/30 hover:border-purple-500/50 transition-all">
             <div className="flex flex-col gap-1">
-              <Activity className="w-4 h-4 lg:w-5 lg:h-5 text-purple-400 mb-1" />
-              <p className="text-[10px] lg:text-xs text-gray-400 leading-tight">Actual Win Rate</p>
-              <p className="text-xl lg:text-3xl font-bold text-white">{winRate.toFixed(1)}%</p>
-              <p className="text-[9px] lg:text-xs text-gray-500">Performance</p>
+              <Activity className="w-4 h-4 text-purple-400 mb-1" />
+              <p className="text-[9px] sm:text-[10px] lg:text-xs text-gray-400 leading-tight">Actual Win Rate</p>
+              <p className="text-lg sm:text-xl lg:text-3xl font-bold text-white">{winRate.toFixed(1)}%</p>
+              <p className="text-[8px] sm:text-[9px] lg:text-xs text-gray-500">Performance</p>
             </div>
           </Card>
 
           {/* Positive Outcomes */}
-          <Card className="p-3 lg:p-4 bg-gradient-to-br from-green-500/10 to-teal-500/10 border-green-500/30 hover:border-green-500/50 transition-all">
+          <Card className="p-2 sm:p-3 lg:p-4 bg-gradient-to-br from-green-500/10 to-teal-500/10 border-green-500/30 hover:border-green-500/50 transition-all">
             <div className="flex flex-col gap-1">
-              <TrendingUp className="w-4 h-4 lg:w-5 lg:h-5 text-green-400 mb-1" />
-              <p className="text-[10px] lg:text-xs text-gray-400 leading-tight">Winning Trades</p>
-              <p className="text-xl lg:text-3xl font-bold text-green-400">{wins}</p>
-              <p className="text-[9px] lg:text-xs text-gray-500">Positive</p>
+              <TrendingUp className="w-4 h-4 text-green-400 mb-1" />
+              <p className="text-[9px] sm:text-[10px] lg:text-xs text-gray-400 leading-tight">Winning Trades</p>
+              <p className="text-lg sm:text-xl lg:text-3xl font-bold text-green-400">{wins}</p>
+              <p className="text-[8px] sm:text-[9px] lg:text-xs text-gray-500">Positive</p>
             </div>
           </Card>
 
           {/* Negative Outcomes */}
-          <Card className="p-3 lg:p-4 bg-gradient-to-br from-red-500/10 to-orange-500/10 border-red-500/30 hover:border-red-500/50 transition-all">
+          <Card className="p-2 sm:p-3 lg:p-4 bg-gradient-to-br from-red-500/10 to-orange-500/10 border-red-500/30 hover:border-red-500/50 transition-all">
             <div className="flex flex-col gap-1">
-              <TrendingDown className="w-4 h-4 lg:w-5 lg:h-5 text-red-400 mb-1" />
-              <p className="text-[10px] lg:text-xs text-gray-400 leading-tight">Losing Trades</p>
-              <p className="text-xl lg:text-3xl font-bold text-red-400">{losses}</p>
-              <p className="text-[9px] lg:text-xs text-gray-500">Negative</p>
+              <TrendingDown className="w-4 h-4 text-red-400 mb-1" />
+              <p className="text-[9px] sm:text-[10px] lg:text-xs text-gray-400 leading-tight">Losing Trades</p>
+              <p className="text-lg sm:text-xl lg:text-3xl font-bold text-red-400">{losses}</p>
+              <p className="text-[8px] sm:text-[9px] lg:text-xs text-gray-500">Negative</p>
             </div>
           </Card>
 
           {/* Starting Capital */}
-          <Card className="p-3 lg:p-4 bg-gradient-to-br from-yellow-500/10 to-orange-500/10 border-yellow-500/30 hover:border-yellow-500/50 transition-all">
+          <Card className="p-2 sm:p-3 lg:p-4 bg-gradient-to-br from-yellow-500/10 to-orange-500/10 border-yellow-500/30 hover:border-yellow-500/50 transition-all">
             <div className="flex flex-col gap-1">
-              <DollarSign className="w-4 h-4 lg:w-5 lg:h-5 text-yellow-400 mb-1" />
-              <p className="text-[10px] lg:text-xs text-gray-400 leading-tight">Starting Capital</p>
-              <p className="text-base lg:text-3xl font-bold text-white break-all">
+              <DollarSign className="w-4 h-4 text-yellow-400 mb-1" />
+              <p className="text-[9px] sm:text-[10px] lg:text-xs text-gray-400 leading-tight">Starting Capital</p>
+              <p className="text-sm sm:text-base lg:text-3xl font-bold text-white break-all">
                 ₹{Math.floor(currentCapital)}
               </p>
-              <p className="text-[9px] lg:text-xs text-gray-500 truncate">
+              <p className="text-[8px] sm:text-[9px] lg:text-xs text-gray-500 truncate">
                 {sessionStarted ? 'Reserved' : 'Initial'}
               </p>
             </div>
@@ -266,11 +269,11 @@ export function GodzillaDashboard() {
         </div>
 
         {/* Trading Interface */}
-        <div className="grid lg:grid-cols-2 gap-8 mb-8">
+        <div className="grid lg:grid-cols-2 gap-6 mb-8 min-w-0">
           {/* Trade Execution Panel */}
-          <Card className="p-8 bg-black border-gray-800">
+          <Card className="p-4 sm:p-6 bg-black border-gray-800 min-w-0 w-full overflow-hidden">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-white">Execute Trade</h2>
+              <h2 className="text-xl sm:text-2xl font-bold text-white">Execute Trade</h2>
             </div>
             
             <div className="space-y-6">
@@ -439,30 +442,30 @@ export function GodzillaDashboard() {
               </div>
 
               {/* Trade Buttons */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="flex gap-3">
                 <Button
                   onClick={() => executeTrade("win")}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white py-6"
-                  size="lg"
+                  className="flex-1 min-w-0 bg-green-600 hover:bg-green-700 text-white py-4 text-sm"
+                  size="default"
                 >
-                  <TrendingUp className="w-5 h-5 mr-2" />
-                  Win Trade
+                  <TrendingUp className="w-4 h-4 mr-1 flex-shrink-0" />
+                  Win
                 </Button>
                 <Button
                   onClick={() => executeTrade("loss")}
-                  className="w-full bg-red-600 hover:bg-red-700 text-white py-6"
-                  size="lg"
+                  className="flex-1 min-w-0 bg-red-600 hover:bg-red-700 text-white py-4 text-sm"
+                  size="default"
                 >
-                  <TrendingDown className="w-5 h-5 mr-2" />
-                  Loss Trade
+                  <TrendingDown className="w-4 h-4 mr-1 flex-shrink-0" />
+                  Loss
                 </Button>
               </div>
             </div>
           </Card>
 
           {/* Trade History */}
-          <Card className="p-8 bg-black border-gray-800">
-            <h2 className="text-2xl font-bold text-white mb-6">Current Session Trades</h2>
+          <Card className="p-4 sm:p-6 bg-black border-gray-800 min-w-0 w-full overflow-hidden">
+            <h2 className="text-xl sm:text-2xl font-bold text-white mb-6">Current Session Trades</h2>
             
             {trades.length === 0 ? (
               <div className="text-center py-12">
@@ -471,21 +474,19 @@ export function GodzillaDashboard() {
                 <p className="text-sm text-gray-600 mt-2">Execute your first trade to start a session</p>
               </div>
             ) : (
-              <div className="max-h-[600px] overflow-y-auto overflow-x-auto">
-                <table className="w-full">
-                  <thead className="sticky top-0 bg-black z-10">
+              <div className="min-w-0 w-full overflow-x-auto">
+                <table className="w-full min-w-[420px]">
+                  <thead>
                     <tr className="border-b border-gray-800">
-                      <th className="text-left py-3 px-4 text-gray-400 font-medium text-sm bg-black">#</th>
-                      <th className="text-left py-3 px-4 text-gray-400 font-medium text-sm bg-black">Outcome</th>
-                      <th className="text-right py-3 px-4 text-gray-400 font-medium text-sm bg-black">Risk Amount</th>
-                      <th className="text-right py-3 px-4 text-gray-400 font-medium text-sm bg-black">P/L</th>
-                      <th className="text-right py-3 px-4 text-gray-400 font-medium text-sm bg-black">Capital After</th>
-                      <th className="text-right py-3 px-4 text-gray-400 font-medium text-sm bg-black">Time</th>
+                      <th className="text-left py-3 px-2 text-gray-400 font-medium text-xs">#</th>
+                      <th className="text-left py-3 px-2 text-gray-400 font-medium text-xs">Outcome</th>
+                      <th className="text-right py-3 px-2 text-gray-400 font-medium text-xs">Risk ₹</th>
+                      <th className="text-right py-3 px-2 text-gray-400 font-medium text-xs">P/L</th>
+                      <th className="text-right py-3 px-2 text-gray-400 font-medium text-xs">Capital</th>
                     </tr>
                   </thead>
                   <tbody>
                     {trades.map((trade, index) => {
-                      // Calculate cumulative capital after this trade
                       const tradesUpToThis = trades.slice(index);
                       const capitalAfter = sessionStartCapital + tradesUpToThis.reduce((sum, t) => sum + t.profit, 0);
                       
@@ -494,36 +495,33 @@ export function GodzillaDashboard() {
                           key={trade.id}
                           className="border-b border-gray-800 hover:bg-gray-900/50 transition-colors"
                         >
-                          <td className="py-3 px-4 text-gray-300">{trades.length - index}</td>
-                          <td className="py-3 px-4">
-                            <div className="flex items-center gap-2">
+                          <td className="py-3 px-2 text-gray-300 text-xs">{trades.length - index}</td>
+                          <td className="py-3 px-2">
+                            <div className="flex items-center gap-1">
                               {trade.outcome === "win" ? (
-                                <TrendingUp className="w-4 h-4 text-green-400" />
+                                <TrendingUp className="w-3 h-3 text-green-400 flex-shrink-0" />
                               ) : (
-                                <TrendingDown className="w-4 h-4 text-red-400" />
+                                <TrendingDown className="w-3 h-3 text-red-400 flex-shrink-0" />
                               )}
-                              <span className={`font-semibold ${
+                              <span className={`font-semibold text-xs ${
                                 trade.outcome === "win" ? "text-green-400" : "text-red-400"
                               }`}>
                                 {trade.outcome === "win" ? "WIN" : "LOSS"}
                               </span>
                             </div>
                           </td>
-                          <td className="py-3 px-4 text-right text-white">
-                            ₹{trade.amount.toFixed(2)}
+                          <td className="py-3 px-2 text-right text-white text-xs whitespace-nowrap">
+                            ₹{trade.amount.toFixed(0)}
                           </td>
-                          <td className="py-3 px-4 text-right">
-                            <span className={`font-bold ${
+                          <td className="py-3 px-2 text-right">
+                            <span className={`font-bold text-xs whitespace-nowrap ${
                               trade.profit >= 0 ? "text-green-400" : "text-red-400"
                             }`}>
-                              {trade.profit >= 0 ? "+" : "-"}₹{Math.abs(trade.profit).toFixed(2)}
+                              {trade.profit >= 0 ? "+" : "-"}₹{Math.abs(trade.profit).toFixed(0)}
                             </span>
                           </td>
-                          <td className="py-3 px-4 text-right text-white font-medium">
-                            ₹{capitalAfter.toFixed(2)}
-                          </td>
-                          <td className="py-3 px-4 text-right text-gray-400 text-sm">
-                            {trade.timestamp.toLocaleTimeString()}
+                          <td className="py-3 px-2 text-right text-white font-medium text-xs whitespace-nowrap">
+                            ₹{capitalAfter.toFixed(0)}
                           </td>
                         </tr>
                       );
@@ -536,7 +534,7 @@ export function GodzillaDashboard() {
         </div>
 
         {/* Session History */}
-        <Card className="p-8 bg-black border-gray-800">
+        <Card className="p-4 sm:p-8 bg-black border-gray-800">
           <div className="flex items-center gap-3 mb-6">
             <History className="w-6 h-6 text-blue-400" />
             <h2 className="text-2xl font-bold text-white">Session History</h2>
@@ -595,35 +593,35 @@ export function GodzillaDashboard() {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between gap-4 text-sm">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm">
                     <div>
-                      <p className="text-gray-500">Start Capital</p>
-                      <p className="text-white font-medium">₹{session.startCapital.toFixed(2)}</p>
+                      <p className="text-gray-500 text-xs">Start Capital</p>
+                      <p className="text-white font-medium text-xs sm:text-sm">₹{session.startCapital.toFixed(2)}</p>
                     </div>
                     <div>
-                      <p className="text-gray-500">End Capital</p>
-                      <p className="text-white font-medium">₹{session.endCapital.toFixed(2)}</p>
+                      <p className="text-gray-500 text-xs">End Capital</p>
+                      <p className="text-white font-medium text-xs sm:text-sm">₹{session.endCapital.toFixed(2)}</p>
                     </div>
                     <div>
-                      <p className="text-gray-500">Trades</p>
-                      <p className="text-white font-medium">{session.trades.length} trades</p>
+                      <p className="text-gray-500 text-xs">Trades</p>
+                      <p className="text-white font-medium text-xs sm:text-sm">{session.trades.length}</p>
                     </div>
                     <div>
-                      <p className="text-gray-500">Win Rate</p>
-                      <p className="text-white font-medium">{session.winRate.toFixed(1)}%</p>
+                      <p className="text-gray-500 text-xs">Win Rate</p>
+                      <p className="text-white font-medium text-xs sm:text-sm">{session.winRate.toFixed(1)}%</p>
                     </div>
                     <div>
-                      <p className="text-gray-500">Wins</p>
-                      <p className="text-green-400 font-medium">{session.wins}</p>
+                      <p className="text-gray-500 text-xs">Wins</p>
+                      <p className="text-green-400 font-medium text-xs sm:text-sm">{session.wins}</p>
                     </div>
                     <div>
-                      <p className="text-gray-500">Losses</p>
-                      <p className="text-red-400 font-medium">{session.losses}</p>
+                      <p className="text-gray-500 text-xs">Losses</p>
+                      <p className="text-red-400 font-medium text-xs sm:text-sm">{session.losses}</p>
                     </div>
                     {session.targetCapital && (
                       <div>
-                        <p className="text-gray-500">Target Capital</p>
-                        <p className="text-white font-medium">₹{session.targetCapital.toFixed(2)}</p>
+                        <p className="text-gray-500 text-xs">Target Capital</p>
+                        <p className="text-white font-medium text-xs sm:text-sm">₹{session.targetCapital.toFixed(2)}</p>
                       </div>
                     )}
                   </div>

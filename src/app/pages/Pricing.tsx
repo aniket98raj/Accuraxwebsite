@@ -71,13 +71,13 @@ export function Pricing() {
           <div className="inline-block px-4 py-2 bg-blue-500/10 text-blue-400 rounded-full text-sm font-medium mb-4 border border-blue-500/20">
             Pricing Plans
           </div>
-          <h1 className="text-5xl font-bold text-white mb-6">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6">
             Choose Your <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">Perfect Plan</span>
           </h1>
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid md:grid-cols-3 gap-8 mb-16">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-16">
           {plans.map((plan, index) => (
             <Card 
               key={index} 
