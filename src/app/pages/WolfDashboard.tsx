@@ -34,7 +34,7 @@ export function WolfDashboard() {
   const [currentCapital, setCurrentCapital] = useState<number>(0); // Reserved capital (not in session)
   const [trades, setTrades] = useState<Trade[]>([]);
   const [tradeAmount, setTradeAmount] = useState<number>(0);
-  const [riskPercent] = useState<number>(1.028); // Fixed risk percentage
+  const [riskPercent] = useState<number>(1.0286); // Fixed risk percentage
   const [payout] = useState<number>(0.82); // Fixed payout ratio
   const [winProbability] = useState<number>(50);
   const [sessionHistory, setSessionHistory] = useState<Session[]>([]);
@@ -60,14 +60,14 @@ export function WolfDashboard() {
   // Calculate base profit (what we'd earn on a win with base risk)
   const baseProfit = baseRiskAmount * payout;
 
-  // Calculate next risk amount based on Martingale strategy
+  // Calculate next risk amount: on loss multiply last risk by 2.22, on win reset to base
   const calculateNextRisk = () => {
     if (cumulativeLoss === 0) {
-      // No losses to recover, use base risk
+      // No previous loss, use base risk
       return baseRiskAmount;
     }
-    // Martingale formula: (accumulated losses + desired profit) ÷ payout
-    return (cumulativeLoss + baseProfit) / payout;
+    // Next risk = last risk amount stored in cumulativeLoss
+    return cumulativeLoss;
   };
 
   const riskAmount = calculateNextRisk();
@@ -161,10 +161,10 @@ export function WolfDashboard() {
       setTotalWins(prev => prev + 1);
       setConsecutiveLosses(0); // Reset consecutive losses on win
     } else {
-      // Loss adds to cumulative loss
-      setCumulativeLoss(cumulativeLoss + riskAmountForTrade);
+      // Loss: next trade risk = current risk × 2.22
+      setCumulativeLoss(riskAmountForTrade * 2.22);
       setTotalLosses(prev => prev + 1);
-      setConsecutiveLosses(prev => prev + 1); // Increment consecutive losses on loss
+      setConsecutiveLosses(prev => prev + 1);
     }
   };
 
@@ -449,17 +449,17 @@ export function WolfDashboard() {
                             </div>
                           </td>
                           <td className="py-3 px-2 text-right text-white text-xs whitespace-nowrap">
-                            ₹{trade.amount.toFixed(0)}
+                            ₹{trade.amount.toFixed(2)}
                           </td>
                           <td className="py-3 px-2 text-right">
                             <span className={`font-bold text-xs whitespace-nowrap ${
                               trade.profit >= 0 ? "text-green-400" : "text-red-400"
                             }`}>
-                              {trade.profit >= 0 ? "+" : "-"}₹{Math.abs(trade.profit).toFixed(0)}
+                              {trade.profit >= 0 ? "+" : "-"}₹{Math.abs(trade.profit).toFixed(2)}
                             </span>
                           </td>
                           <td className="py-3 px-2 text-right text-white font-medium text-xs whitespace-nowrap">
-                            ₹{capitalAfter.toFixed(0)}
+                            ₹{capitalAfter.toFixed(2)}
                           </td>
                         </tr>
                       );
