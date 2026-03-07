@@ -1,3 +1,6 @@
+import { useState, useEffect } from "react";
+import { Button } from "../components/ui/button";
+import { Card } from "../components/ui/card";
 import { TrendingUp, TrendingDown, DollarSign, Percent, Target, Activity, History, CheckCircle2, RotateCcw, BookOpen, X } from "lucide-react";
 
 interface Trade {
@@ -22,7 +25,7 @@ interface Session {
   winRate: number;
   riskPercent: number;
   targetCapital?: number;
-  completionReason: "trades_completed" | "target_reached";
+  completionReason: "trades_completed" | "target_reached" | "capital_lost";
   timestamp: Date;
 }
 
@@ -39,42 +42,55 @@ export function TurtleDashboard() {
   const [trades, setTrades] = useState<Trade[]>([]);
   const [sessionStarted, setSessionStarted] = useState<boolean>(false);
   const [sessionStartCapital, setSessionStartCapital] = useState<number>(0);
+  const [consecutiveLosses, setConsecutiveLosses] = useState<number>(0);
+  const [lastRiskAmount, setLastRiskAmount] = useState<number>(0);
+  const [hasWon, setHasWon] = useState<boolean>(false);
   
   // Fixed target capital at 1.07% - always enabled
   const targetPercent = 1.07;
   const targetCapital = sessionStarted ? sessionStartCapital * (1 + targetPercent / 100) : capital * (1 + targetPercent / 100);
   const targetProfit = sessionStarted ? sessionStartCapital * (targetPercent / 100) : capital * (targetPercent / 100);
   
-  // Dynamic risk calculation
-  // Initial risk percentage: 1.021% (calculated to reach 1.07% in 2 wins)
-  const initialRiskPercent = 1.021;
+  // Initial risk percentage: 1.0212%
+  const initialRiskPercent = 1.0212;
   
-  // Calculate risk amount based on current trade number
+  // Loss multiplier sequence for consecutive losses (applied to previous risk)
+  // Pre-win sequence: ×1.9043, ×1.8653, ×1.8135, ×1.7412, ×1.6325, ×1.4514, ×1.0882
+  // Post-win: always ×2.1767
+  const preWinMultipliers = [1.9043, 1.8653, 1.8135, 1.7412, 1.6325, 1.4514, 1.0882];
+  const postWinMultiplier = 2.1767;
+
+  const baseRisk = sessionStarted
+    ? sessionStartCapital * (initialRiskPercent / 100)
+    : capital * (initialRiskPercent / 100);
+
+  // Calculate totalProfit early so it can be used in calculateRiskAmount
+  const totalProfit = trades.reduce((sum, t) => sum + t.profit, 0);
+
   const calculateRiskAmount = () => {
-    if (!sessionStarted && trades.length === 0) {
-      // First trade: use initial risk percentage
-      return capital * (initialRiskPercent / 100);
-    }
-    
-    if (sessionStarted) {
-      // Calculate remaining profit needed to reach target
-      const currentProfit = trades.reduce((sum, t) => sum + t.profit, 0);
-      const remainingProfit = targetProfit - currentProfit;
-      
-      // If we've already reached or exceeded target, return 0
-      if (remainingProfit <= 0) {
-        return 0;
+    if (consecutiveLosses === 0) {
+      if (hasWon) {
+        // After a win: next risk = remaining profit needed / 0.85
+        const remainingProfit = targetProfit - totalProfit;
+        if (remainingProfit <= 0) return 0;
+        return remainingProfit / 0.85;
       }
-      
-      // Calculate risk amount needed: remaining profit / 0.85 (win rate)
-      const nextRiskAmount = remainingProfit / 0.85;
-      
-      return nextRiskAmount;
+      // No losses, no wins yet — use base risk
+      return baseRisk;
     }
-    
-    return capital * (initialRiskPercent / 100);
+    if (hasWon) {
+      // After first win, every loss multiplies by 2.1767
+      return lastRiskAmount * postWinMultiplier;
+    }
+    // Pre-win: use predefined multiplier sequence
+    const idx = consecutiveLosses - 1;
+    const multiplier =
+      idx < preWinMultipliers.length
+        ? preWinMultipliers[idx]
+        : preWinMultipliers[preWinMultipliers.length - 1];
+    return lastRiskAmount * multiplier;
   };
-  
+
   const riskAmount = calculateRiskAmount();
 
   // Calculate current session statistics
@@ -82,7 +98,7 @@ export function TurtleDashboard() {
   const wins = completedTrades.filter(t => t.outcome === "win").length;
   const losses = completedTrades.filter(t => t.outcome === "loss").length;
   const winRate = completedTrades.length > 0 ? (wins / completedTrades.length) * 100 : 0;
-  const totalProfit = trades.reduce((sum, t) => sum + t.profit, 0);
+  // totalProfit is already calculated above
 
   // Calculate overall statistics from all sessions
   const totalSessions = sessionHistory.length;
@@ -92,7 +108,7 @@ export function TurtleDashboard() {
   const totalLossesAcrossAllSessions = sessionHistory.reduce((sum, s) => sum + s.losses, 0);
   const overallWinRate = totalTradesAcrossAllSessions > 0 ? (totalWinsAcrossAllSessions / totalTradesAcrossAllSessions) * 100 : 0;
 
-  const endSession = (reason: "trades_completed" | "target_reached") => {
+  const endSession = (reason: "trades_completed" | "target_reached" | "capital_lost") => {
     const finalCapital = capital;
     
     const newSession: Session = {
@@ -120,20 +136,26 @@ export function TurtleDashboard() {
     setCurrentCapital(0);
     setTrades([]);
     setSessionStartCapital(0);
+    setConsecutiveLosses(0);
+    setLastRiskAmount(0);
+    setHasWon(false);
   };
 
   // Check if session should end
   useEffect(() => {
     if (sessionStarted) {
-      const shouldEndByWins = wins >= 2; // End after 2 wins (Low Risk Growth Model)
-      const shouldEndByTrades = trades.length >= totalAllocation; // Or after 9 total trades
-      const shouldEndByTarget = capital >= targetCapital; // Or when 1.07% target is reached
+      const shouldEndByWins = wins >= 2;
+      const shouldEndByTrades = trades.length >= totalAllocation;
+      const shouldEndByTarget = capital >= targetCapital;
+      const shouldEndByCapitalLost = capital <= 0 || (riskAmount > 0 && capital < riskAmount);
 
-      if (shouldEndByWins || shouldEndByTrades || shouldEndByTarget) {
+      if (shouldEndByCapitalLost) {
+        endSession("capital_lost");
+      } else if (shouldEndByWins || shouldEndByTrades || shouldEndByTarget) {
         endSession(shouldEndByTarget ? "target_reached" : "trades_completed");
       }
     }
-  }, [trades.length, wins, capital, sessionStarted, totalAllocation, targetCapital]);
+  }, [trades.length, wins, capital, sessionStarted, totalAllocation, targetCapital, riskAmount]);
 
   const executeTrade = (outcome: "win" | "loss") => {
     const riskAmountForTrade = riskAmount;
@@ -152,6 +174,15 @@ export function TurtleDashboard() {
     setTrades(updatedTrades);
     setCapital(capital + profit);
 
+    if (outcome === "win") {
+      setConsecutiveLosses(0);
+      setHasWon(true);
+      setLastRiskAmount(riskAmountForTrade);
+    } else {
+      setConsecutiveLosses(prev => prev + 1);
+      setLastRiskAmount(riskAmountForTrade);
+    }
+
     if (!sessionStarted) {
       setSessionStarted(true);
       setSessionStartCapital(capital);
@@ -164,6 +195,9 @@ export function TurtleDashboard() {
     setCurrentCapital(0);
     setTrades([]);
     setSessionStartCapital(0);
+    setConsecutiveLosses(0);
+    setLastRiskAmount(0);
+    setHasWon(false);
   };
 
   return (
@@ -312,7 +346,7 @@ export function TurtleDashboard() {
                       <p className={`text-xl font-bold ${
                         session.totalProfit >= 0 ? "text-green-400" : "text-red-400"
                       }`}>
-                        {session.profitPercent >= 0 ? "+" : ""}{session.profitPercent.toFixed(1)}%
+                        {session.profitPercent >= 0 ? "+" : ""}{session.profitPercent.toFixed(2)}%
                       </p>
                     </div>
 
@@ -540,7 +574,7 @@ export function TurtleDashboard() {
                     onClick={() => executeTrade("win")}
                     className="flex-1 min-w-0 bg-green-600 hover:bg-green-700 text-white py-4 text-sm"
                     size="default"
-                    disabled={capital === 0 || sessionHistory.length >= maxSessions}
+                    disabled={capital <= 0 || (riskAmount > 0 && capital < riskAmount) || sessionHistory.length >= maxSessions}
                   >
                     <TrendingUp className="w-4 h-4 mr-1 flex-shrink-0" />
                     Win
@@ -549,7 +583,7 @@ export function TurtleDashboard() {
                     onClick={() => executeTrade("loss")}
                     className="flex-1 min-w-0 bg-red-600 hover:bg-red-700 text-white py-4 text-sm"
                     size="default"
-                    disabled={capital === 0 || sessionHistory.length >= maxSessions}
+                    disabled={capital <= 0 || (riskAmount > 0 && capital < riskAmount) || sessionHistory.length >= maxSessions}
                   >
                     <TrendingDown className="w-4 h-4 mr-1 flex-shrink-0" />
                     Loss
