@@ -29,6 +29,11 @@ app.use('/api/auth', authRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/user', userRoutes);
 
+// ── Health Check ───────────────────────────────────────────────────────────────
+app.get('/api/health', (_req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
 // ── Serve React Frontend (production) ─────────────────────────────────────────
 const distPath = path.join(__dirname, '../dist');
 app.use(express.static(distPath));
