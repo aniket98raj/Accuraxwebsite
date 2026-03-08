@@ -32,7 +32,12 @@ app.use('/api/user', userRoutes);
 // ── Serve React Frontend (production) ─────────────────────────────────────────
 const distPath = path.join(__dirname, '../dist');
 app.use(express.static(distPath));
-app.get('*', (_req, res) => {
+
+// Only serve index.html for non-API GET requests (prevents API 404s returning HTML)
+app.get('*', (req, res) => {
+  if (req.path.startsWith('/api/')) {
+    return res.status(404).json({ error: `API route not found: ${req.path}` });
+  }
   res.sendFile(path.join(distPath, 'index.html'));
 });
 

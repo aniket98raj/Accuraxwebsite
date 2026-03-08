@@ -27,6 +27,16 @@ async function apiFetch<T = unknown>(
   }
 
   const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
+
+  // Guard: if the response is HTML (e.g. server returned index.html), give a clear error
+  const contentType = res.headers.get('content-type') || '';
+  if (!contentType.includes('application/json')) {
+    throw new Error(
+      `Server returned HTML instead of JSON. ` +
+      `The backend may be down or misconfigured. (${res.status} ${res.statusText})`
+    );
+  }
+
   const data = await res.json();
 
   if (!res.ok) {
