@@ -14,9 +14,13 @@ import { useAuth } from "../context/AuthContext";
 import { loadRazorpayScript } from "../../lib/razorpay";
 import type { RazorpayResponse } from "../../lib/razorpay";
 
-// API base URL for Edge Function
-// VITE_API_URL=https://your-supabase-instance.com/functions/v1/make-server-bdbd4811
-const API_URL = import.meta.env.VITE_API_URL as string;
+// Edge Function URL — matches VITE_API_URL in your Hostinger env vars
+const EDGE_FN_URL =
+  (import.meta.env.VITE_API_URL as string) ||
+  "https://supabase.quantandcompany.com/functions/v1/make-server-bdbd4811";
+
+const ANON_KEY =
+  (import.meta.env.VITE_SUPABASE_ANON_KEY as string) || "";
 
 const PLAN_INFO: Record<
   string,
@@ -67,7 +71,9 @@ export function PaymentPage() {
 
   const [paymentState, setPaymentState] = useState<PaymentState>("idle");
   const [error, setError] = useState<string | null>(null);
-  const [subscriptionId, setSubscriptionId] = useState<string | null>(null);
+
+  const gstAmount = plan ? Math.round(plan.price * 0.18) : 0;
+  const totalAmount = plan ? plan.price + gstAmount : 0;
 
   useEffect(() => {
     if (!plan) navigate("/pricing");
@@ -80,7 +86,7 @@ export function PaymentPage() {
     setError(null);
     setPaymentState("loading");
 
-    // Load Razorpay script
+    // Load Razorpay checkout.js
     const scriptLoaded = await loadRazorpayScript();
     if (!scriptLoaded) {
       setError("Failed to load payment gateway. Please check your connection.");
@@ -89,21 +95,23 @@ export function PaymentPage() {
     }
 
     const token = session?.access_token;
-    if (!token) {
-      setError("Session expired. Please login again.");
-      setPaymentState("failed");
-      return;
-    }
 
     try {
-      // Step 1: Create Razorpay order via Edge Function
-      const orderRes = await fetch(`${API_URL}/api/payment/create-order`, {
+      // ─── Step 1: Create Razorpay order via Edge Function ───────────────
+      const orderRes = await fetch(EDGE_FN_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          apikey: ANON_KEY,
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
-        body: JSON.stringify({ plan_name: planName }),
+        body: JSON.stringify({
+          action: "create_order",
+          amount: totalAmount,       // edge fn multiplies by 100 for paise
+          currency: "INR",
+          planName,
+          userId: user.id,
+        }),
       });
 
       if (!orderRes.ok) {
@@ -111,16 +119,17 @@ export function PaymentPage() {
         throw new Error(err.error || "Failed to create order");
       }
 
-      const orderData = await orderRes.json();
+      // Edge fn returns: { orderId, amount, currency, keyId }
+      const { orderId, amount, currency, keyId } = await orderRes.json();
 
-      // Step 2: Open Razorpay payment modal
+      // ─── Step 2: Open Razorpay payment modal ───────────────────────────
       const razorpay = new window.Razorpay({
-        key: orderData.key_id,
-        amount: orderData.amount,
-        currency: orderData.currency,
+        key: keyId,
+        amount,                      // already in paise from Razorpay API
+        currency,
         name: "AccuraX",
         description: `${plan.name} — ${plan.subtitle}`,
-        order_id: orderData.order_id,
+        order_id: orderId,
         prefill: {
           name: profile?.full_name ?? user.email ?? "",
           email: user.email ?? "",
@@ -133,19 +142,23 @@ export function PaymentPage() {
           },
         },
         handler: async (response: RazorpayResponse) => {
-          // Step 3: Verify payment signature
+          // ─── Step 3: Verify payment signature via Edge Function ──────
           try {
-            const verifyRes = await fetch(`${API_URL}/api/payment/verify`, {
+            const verifyRes = await fetch(EDGE_FN_URL, {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
+                apikey: ANON_KEY,
+                ...(token ? { Authorization: `Bearer ${token}` } : {}),
               },
               body: JSON.stringify({
-                razorpay_payment_id: response.razorpay_payment_id,
+                action: "verify_payment",
                 razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
                 razorpay_signature: response.razorpay_signature,
-                plan_name: planName,
+                userId: user.id,
+                planName,
+                amount: totalAmount,
               }),
             });
 
@@ -155,7 +168,10 @@ export function PaymentPage() {
             }
 
             const verifyData = await verifyRes.json();
-            setSubscriptionId(verifyData.subscription_id);
+            if (!verifyData.success) {
+              throw new Error(verifyData.error || "Signature mismatch");
+            }
+
             setPaymentState("success");
           } catch (err: unknown) {
             const msg = err instanceof Error ? err.message : "Verification failed";
@@ -173,7 +189,7 @@ export function PaymentPage() {
     }
   };
 
-  // Success Screen
+  // ── Success Screen ──────────────────────────────────────────────────────────
   if (paymentState === "success") {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center px-4">
@@ -186,14 +202,11 @@ export function PaymentPage() {
             <h2 className="text-2xl font-bold text-white mb-2">
               Payment Successful!
             </h2>
-            <p className="text-gray-400 mb-2">
-              Your <span className="text-white font-semibold">{plan.name}</span> subscription is now active.
+            <p className="text-gray-400 mb-6">
+              Your{" "}
+              <span className="text-white font-semibold">{plan.name}</span>{" "}
+              subscription is now active.
             </p>
-            {subscriptionId && (
-              <p className="text-gray-600 text-xs mb-6">
-                Subscription ID: {subscriptionId}
-              </p>
-            )}
             <div className="space-y-3">
               <Button
                 onClick={() => navigate(plan.dashboardPath)}
@@ -214,9 +227,7 @@ export function PaymentPage() {
     );
   }
 
-  const gstAmount = Math.round(plan.price * 0.18);
-  const totalAmount = plan.price + gstAmount;
-
+  // ── Main Payment Screen ─────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-black pt-24 pb-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-lg mx-auto">
@@ -269,7 +280,9 @@ export function PaymentPage() {
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
                 <span className="text-white font-bold text-sm">
-                  {profile?.full_name?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || "U"}
+                  {profile?.full_name?.[0]?.toUpperCase() ||
+                    user.email?.[0]?.toUpperCase() ||
+                    "U"}
                 </span>
               </div>
               <div>
@@ -286,7 +299,9 @@ export function PaymentPage() {
             <div className="flex items-start gap-3 p-4 bg-red-900/20 border border-red-500/30 rounded-lg">
               <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-red-400 text-sm font-medium">Payment Failed</p>
+                <p className="text-red-400 text-sm font-medium">
+                  Payment Failed
+                </p>
                 <p className="text-red-400/70 text-xs mt-1">{error}</p>
               </div>
             </div>
@@ -324,9 +339,9 @@ export function PaymentPage() {
           </div>
 
           <p className="text-center text-gray-600 text-xs leading-relaxed">
-            By completing your purchase, you agree to AccuraX's Terms of Service.
-            Subscriptions are non-refundable. This is an educational platform —
-            not financial advice.
+            By completing your purchase, you agree to AccuraX's Terms of
+            Service. Subscriptions are non-refundable. This is an educational
+            platform — not financial advice.
           </p>
         </div>
       </div>
