@@ -1,7 +1,7 @@
-import { Button } from "../components/ui/button";
 import { Card } from "../components/ui/card";
 import { Check } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 const plans = [
   {
@@ -62,6 +62,16 @@ const plans = [
 
 export function Pricing() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const handleGetStarted = (planName: string) => {
+    if (!user) {
+      // Not logged in → go to login, then redirect to payment
+      navigate("/login", { state: { from: { pathname: "/payment" } } });
+    } else {
+      navigate("/payment", { state: { planName } });
+    }
+  };
 
   return (
     <div className="pt-24 pb-16 px-4 sm:px-6 lg:px-8 bg-black">
@@ -122,17 +132,16 @@ export function Pricing() {
                 </p>
               </div>
 
-              <Button 
-                className={`w-full ${
-                  plan.popular 
-                    ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700' 
+              <button
+                className={`w-full py-3 px-6 rounded-lg font-semibold transition-all duration-200 ${
+                  plan.popular
+                    ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white'
                     : 'bg-white/5 hover:bg-white/10 text-white border border-gray-800'
                 }`}
-                size="lg"
-                onClick={() => navigate('/signup')}
+                onClick={() => handleGetStarted(plan.name)}
               >
-                Get Started
-              </Button>
+                {user ? "Buy Now" : "Get Started"}
+              </button>
               
               {/* Try Dashboard Link */}
               {plan.name === "GODZILLA" && (
