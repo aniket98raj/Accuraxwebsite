@@ -13,14 +13,7 @@ import {
 import { useAuth } from "../context/AuthContext";
 import { loadRazorpayScript } from "../../lib/razorpay";
 import type { RazorpayResponse } from "../../lib/razorpay";
-
-// Edge Function URL — matches VITE_API_URL in your Hostinger env vars
-const EDGE_FN_URL =
-  (import.meta.env.VITE_API_URL as string) ||
-  "https://supabase.quantandcompany.com/functions/v1/make-server-bdbd4811";
-
-const ANON_KEY =
-  (import.meta.env.VITE_SUPABASE_ANON_KEY as string) || "";
+import { paymentApi } from "../../lib/api";
 
 const PLAN_INFO: Record<
   string,
@@ -64,7 +57,7 @@ type PaymentState = "idle" | "loading" | "success" | "failed";
 export function PaymentPage() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, session, profile } = useAuth();
+  const { user, profile } = useAuth();
 
   const planName = (location.state as { planName?: string })?.planName;
   const plan = planName ? PLAN_INFO[planName] : null;
@@ -94,38 +87,18 @@ export function PaymentPage() {
       return;
     }
 
-    const token = session?.access_token;
-
     try {
-      // ─── Step 1: Create Razorpay order via Edge Function ───────────────
-      const orderRes = await fetch(EDGE_FN_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          apikey: ANON_KEY,
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify({
-          action: "create_order",
-          amount: totalAmount,       // edge fn multiplies by 100 for paise
-          currency: "INR",
-          planName,
-          userId: user.id,
-        }),
-      });
+      // ── Step 1: Create Razorpay order via our Node API ──────────────────────
+      const { orderId, amount, currency, keyId } = await paymentApi.createOrder(
+        totalAmount,
+        "INR",
+        planName!
+      );
 
-      if (!orderRes.ok) {
-        const err = await orderRes.json();
-        throw new Error(err.error || "Failed to create order");
-      }
-
-      // Edge fn returns: { orderId, amount, currency, keyId }
-      const { orderId, amount, currency, keyId } = await orderRes.json();
-
-      // ─── Step 2: Open Razorpay payment modal ───────────────────────────
+      // ── Step 2: Open Razorpay payment modal ─────────────────────────────────
       const razorpay = new window.Razorpay({
         key: keyId,
-        amount,                      // already in paise from Razorpay API
+        amount,
         currency,
         name: "AccuraX",
         description: `${plan.name} — ${plan.subtitle}`,
@@ -142,34 +115,18 @@ export function PaymentPage() {
           },
         },
         handler: async (response: RazorpayResponse) => {
-          // ─── Step 3: Verify payment signature via Edge Function ──────
+          // ── Step 3: Verify payment signature via our Node API ────────────────
           try {
-            const verifyRes = await fetch(EDGE_FN_URL, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                apikey: ANON_KEY,
-                ...(token ? { Authorization: `Bearer ${token}` } : {}),
-              },
-              body: JSON.stringify({
-                action: "verify_payment",
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature,
-                userId: user.id,
-                planName,
-                amount: totalAmount,
-              }),
+            const result = await paymentApi.verify({
+              razorpay_order_id:   response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature:  response.razorpay_signature,
+              planName:            planName!,
+              amount:              totalAmount,
             });
 
-            if (!verifyRes.ok) {
-              const err = await verifyRes.json();
-              throw new Error(err.error || "Payment verification failed");
-            }
-
-            const verifyData = await verifyRes.json();
-            if (!verifyData.success) {
-              throw new Error(verifyData.error || "Signature mismatch");
+            if (!result.success) {
+              throw new Error("Payment verification failed");
             }
 
             setPaymentState("success");
@@ -189,7 +146,7 @@ export function PaymentPage() {
     }
   };
 
-  // ── Success Screen ──────────────────────────────────────────────────────────
+  // ── Success Screen ────────────────────────────────────────────────────────────
   if (paymentState === "success") {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center px-4">
@@ -227,7 +184,7 @@ export function PaymentPage() {
     );
   }
 
-  // ── Main Payment Screen ─────────────────────────────────────────────────────
+  // ── Main Payment Screen ───────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-black pt-24 pb-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-lg mx-auto">

@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "../../lib/supabase";
+import { userApi } from "../../lib/api";
+import type { Subscription } from "../../lib/api";
 import { useAuth } from "../context/AuthContext";
-import type { Subscription } from "../../lib/database.types";
 import {
   User,
   CreditCard,
@@ -113,14 +113,11 @@ export function UserDashboard() {
 
   const fetchSubscriptions = useCallback(async () => {
     if (!user) return;
-    const { data, error } = await supabase
-      .from("subscriptions")
-      .select("*")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false });
-
-    if (!error && data) {
-      setSubscriptions(data as Subscription[]);
+    try {
+      const data = await userApi.getSubscriptions();
+      setSubscriptions(data);
+    } catch {
+      // silently fail
     }
     setLoading(false);
     setRefreshing(false);

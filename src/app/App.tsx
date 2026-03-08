@@ -13,6 +13,7 @@ import { Contact } from "./pages/Contact";
 import { Login } from "./pages/Login";
 import { Signup } from "./pages/Signup";
 import { ForgotPassword } from "./pages/ForgotPassword";
+import { ResetPassword } from "./pages/ResetPassword";
 import { Disclaimer } from "./pages/Disclaimer";
 import { RiskDisclosure } from "./pages/RiskDisclosure";
 import { PrivacyPolicy } from "./pages/PrivacyPolicy";
@@ -43,6 +44,7 @@ export default function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
 
             {/* Dashboard pages — header only, no footer */}
             <Route
