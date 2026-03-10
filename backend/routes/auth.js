@@ -104,7 +104,7 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// ── GET /api/auth/me ─────────────��─────────────────────────────────────────────
+// ── GET /api/auth/me ──────────────────────────────────────────────────────────
 router.get('/me', requireAuth, async (req, res) => {
   try {
     const rows = await query('SELECT * FROM users WHERE id = ?', [req.userId]);
@@ -136,10 +136,11 @@ router.get('/me', requireAuth, async (req, res) => {
 
 // ── GET /api/auth/confirm-email ────────────────────────────────────────────────
 router.get('/confirm-email', async (req, res) => {
+  const FRONTEND = process.env.FRONTEND_URL || 'https://accurax.in';
   try {
     const { token } = req.query;
     if (!token) {
-      return res.redirect('/login?error=invalid-token');
+      return res.redirect(`${FRONTEND}/login?error=invalid-token`);
     }
 
     const rows = await query(
@@ -148,7 +149,7 @@ router.get('/confirm-email', async (req, res) => {
     );
 
     if (rows.length === 0) {
-      return res.redirect('/login?error=expired-token');
+      return res.redirect(`${FRONTEND}/login?error=expired-token`);
     }
 
     await query(
@@ -156,10 +157,10 @@ router.get('/confirm-email', async (req, res) => {
       [rows[0].id]
     );
 
-    return res.redirect('/login?confirmed=true');
+    return res.redirect(`${FRONTEND}/login?confirmed=true`);
   } catch (err) {
     console.error('Confirm email error:', err);
-    return res.redirect('/login?error=server-error');
+    return res.redirect(`${FRONTEND}/login?error=server-error`);
   }
 });
 

@@ -8,7 +8,7 @@ const plans = [
     name: "GODZILLA",
     emoji: "🦖",
     subtitle: "High Risk Growth Model",
-    price: "399",
+    price: "499",
     description: "For aggressive traders seeking high-risk, fast growth opportunities",
     features: [
       "Rule-based Money Management System",
@@ -26,7 +26,7 @@ const plans = [
     name: "WOLF",
     emoji: "🐺",
     subtitle: "Loss Recovery Model",
-    price: "499",
+    price: "999",
     description: "Balanced approach with structured loss recovery for medium-risk traders",
     features: [
       "Structured Loss Recovery Money Management System",
@@ -44,7 +44,7 @@ const plans = [
     name: "TURTLE",
     emoji: "🐢",
     subtitle: "Capital Protection Model",
-    price: "599",
+    price: "1499",
     description: "Conservative approach prioritizing capital protection and stable growth",
     features: [
       "Conservative Capital Protection Money Management System",
