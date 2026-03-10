@@ -12,31 +12,31 @@ import { initDB } from './db/mysql.js';
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// ── Middleware ──────────────────────────────────────────────────
+// ── Middleware ─────────────────────────────────────────────────────────────────
 app.use(cors({
   origin: [
     process.env.FRONTEND_URL || 'https://accurax.in',
     'https://accurax.in',
     'https://www.accurax.in',
-    'http://localhost:5173',
+    'http://localhost:5173', // local dev (Vite)
   ],
   credentials: true,
 }));
 app.use(express.json());
 
-// ── API Routes ──────────────────────────────────────────────────
+// ── API Routes ─────────────────────────────────────────────────────────────────
 app.use('/api/auth', authRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/user', userRoutes);
 
-// ── Health Check ────────────────────────────────────────────────
+// ── Health Check ───────────────────────────────────────────────────────────────
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// ── Start ───────────────────────────────────────────────────────
+// ── Start ──────────────────────────────────────────────────────────────────────
 async function start() {
-  await initDB();
+  await initDB(); // create tables if they don't exist
   app.listen(PORT, () => {
     console.log(`✅ AccuraX API server running on port ${PORT}`);
   });

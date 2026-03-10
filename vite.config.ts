@@ -13,7 +13,7 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
-  // Copy public/ folder contents (including .htaccess) into dist/ on build
+  // public/ contents (including .htaccess) are copied into dist/ at build time
   publicDir: 'public',
   // ── Dev server proxy: forward /api/* to Express running on :3000 ────────────
   server: {
