@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import { Mail, Lock, Eye, EyeOff, AlertCircle, CheckCircle, RefreshCw } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
@@ -14,14 +14,34 @@ export function Login() {
   const [error, setError] = useState<string | null>(null);
   const [emailNotConfirmed, setEmailNotConfirmed] = useState(false);
   const [resendSuccess, setResendSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const { signIn, resendConfirmationEmail } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
 
   const from =
     (location.state as { from?: { pathname: string } })?.from?.pathname ||
     "/user-dashboard";
+
+  // Handle query params from backend redirects
+  useEffect(() => {
+    const errorParam = searchParams.get("error");
+    const confirmed = searchParams.get("confirmed");
+
+    if (confirmed === "true") {
+      setSuccessMessage("Email confirmed successfully! You can now sign in.");
+    } else if (errorParam === "expired-token") {
+      setError("Your confirmation link has expired (links are valid for 24 hours). Enter your email below and resend a new one.");
+      setEmailNotConfirmed(true);
+    } else if (errorParam === "invalid-token") {
+      setError("Invalid confirmation link. Please request a new one.");
+      setEmailNotConfirmed(true);
+    } else if (errorParam === "server-error") {
+      setError("A server error occurred. Please try again or contact support.");
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -81,7 +101,15 @@ export function Login() {
             <p className="text-gray-400">Sign in to your AccuraX account</p>
           </div>
 
-          {/* Email Not Confirmed Banner */}
+          {/* Success Banner (email confirmed) */}
+          {successMessage && (
+            <div className="mb-6 flex items-start gap-3 p-4 bg-green-900/20 border border-green-500/30 rounded-lg">
+              <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+              <p className="text-green-400 text-sm">{successMessage}</p>
+            </div>
+          )}
+
+          {/* Email Not Confirmed / Expired Token Banner */}
           {emailNotConfirmed && (
             <div className="mb-6 p-4 bg-yellow-900/20 border border-yellow-500/40 rounded-lg">
               <div className="flex items-start gap-3 mb-3">
