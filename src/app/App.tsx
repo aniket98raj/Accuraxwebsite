@@ -48,16 +48,34 @@ export default function App() {
 
             {/* Dashboard pages — header only, no footer */}
             <Route
-              path="/dashboard/*"
+              path="/dashboard/godzilla"
               element={
                 <>
                   <Header />
                   <main className="flex-1 min-w-0 w-full overflow-x-hidden">
-                    <Routes>
-                      <Route path="godzilla" element={<GodzillaDashboard />} />
-                      <Route path="wolf" element={<WolfDashboard />} />
-                      <Route path="turtle" element={<TurtleDashboard />} />
-                    </Routes>
+                    <GodzillaDashboard />
+                  </main>
+                </>
+              }
+            />
+            <Route
+              path="/dashboard/wolf"
+              element={
+                <>
+                  <Header />
+                  <main className="flex-1 min-w-0 w-full overflow-x-hidden">
+                    <WolfDashboard />
+                  </main>
+                </>
+              }
+            />
+            <Route
+              path="/dashboard/turtle"
+              element={
+                <>
+                  <Header />
+                  <main className="flex-1 min-w-0 w-full overflow-x-hidden">
+                    <TurtleDashboard />
                   </main>
                 </>
               }
@@ -93,26 +111,156 @@ export default function App() {
 
             {/* All other pages with header + footer */}
             <Route
-              path="/*"
+              path="/"
               element={
                 <>
                   <Header />
                   <main className="flex-1 min-w-0 w-full overflow-x-hidden">
-                    <Routes>
-                      <Route path="/" element={<Home />} />
-                      <Route path="/about" element={<About />} />
-                      <Route path="/services" element={<Services />} />
-                      <Route path="/pricing" element={<Pricing />} />
-                      <Route path="/contact" element={<Contact />} />
-                      <Route path="/disclaimer" element={<Disclaimer />} />
-                      <Route path="/risk-disclosure" element={<RiskDisclosure />} />
-                      <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-                      <Route path="/terms-of-service" element={<TermsOfService />} />
-                      <Route path="/cookie-policy" element={<CookiePolicy />} />
-                      <Route path="/educational/godzilla" element={<Godzilla />} />
-                      <Route path="/educational/wolf" element={<Wolf />} />
-                      <Route path="/educational/turtle" element={<Turtle />} />
-                    </Routes>
+                    <Home />
+                  </main>
+                  <Footer />
+                </>
+              }
+            />
+            <Route
+              path="/about"
+              element={
+                <>
+                  <Header />
+                  <main className="flex-1 min-w-0 w-full overflow-x-hidden">
+                    <About />
+                  </main>
+                  <Footer />
+                </>
+              }
+            />
+            <Route
+              path="/services"
+              element={
+                <>
+                  <Header />
+                  <main className="flex-1 min-w-0 w-full overflow-x-hidden">
+                    <Services />
+                  </main>
+                  <Footer />
+                </>
+              }
+            />
+            <Route
+              path="/pricing"
+              element={
+                <>
+                  <Header />
+                  <main className="flex-1 min-w-0 w-full overflow-x-hidden">
+                    <Pricing />
+                  </main>
+                  <Footer />
+                </>
+              }
+            />
+            <Route
+              path="/contact"
+              element={
+                <>
+                  <Header />
+                  <main className="flex-1 min-w-0 w-full overflow-x-hidden">
+                    <Contact />
+                  </main>
+                  <Footer />
+                </>
+              }
+            />
+            <Route
+              path="/disclaimer"
+              element={
+                <>
+                  <Header />
+                  <main className="flex-1 min-w-0 w-full overflow-x-hidden">
+                    <Disclaimer />
+                  </main>
+                  <Footer />
+                </>
+              }
+            />
+            <Route
+              path="/risk-disclosure"
+              element={
+                <>
+                  <Header />
+                  <main className="flex-1 min-w-0 w-full overflow-x-hidden">
+                    <RiskDisclosure />
+                  </main>
+                  <Footer />
+                </>
+              }
+            />
+            <Route
+              path="/privacy-policy"
+              element={
+                <>
+                  <Header />
+                  <main className="flex-1 min-w-0 w-full overflow-x-hidden">
+                    <PrivacyPolicy />
+                  </main>
+                  <Footer />
+                </>
+              }
+            />
+            <Route
+              path="/terms-of-service"
+              element={
+                <>
+                  <Header />
+                  <main className="flex-1 min-w-0 w-full overflow-x-hidden">
+                    <TermsOfService />
+                  </main>
+                  <Footer />
+                </>
+              }
+            />
+            <Route
+              path="/cookie-policy"
+              element={
+                <>
+                  <Header />
+                  <main className="flex-1 min-w-0 w-full overflow-x-hidden">
+                    <CookiePolicy />
+                  </main>
+                  <Footer />
+                </>
+              }
+            />
+            <Route
+              path="/educational/godzilla"
+              element={
+                <>
+                  <Header />
+                  <main className="flex-1 min-w-0 w-full overflow-x-hidden">
+                    <Godzilla />
+                  </main>
+                  <Footer />
+                </>
+              }
+            />
+            <Route
+              path="/educational/wolf"
+              element={
+                <>
+                  <Header />
+                  <main className="flex-1 min-w-0 w-full overflow-x-hidden">
+                    <Wolf />
+                  </main>
+                  <Footer />
+                </>
+              }
+            />
+            <Route
+              path="/educational/turtle"
+              element={
+                <>
+                  <Header />
+                  <main className="flex-1 min-w-0 w-full overflow-x-hidden">
+                    <Turtle />
                   </main>
                   <Footer />
                 </>
