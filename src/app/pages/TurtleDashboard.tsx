@@ -145,7 +145,7 @@ export function TurtleDashboard() {
   useEffect(() => {
     if (sessionStarted) {
       const shouldEndByWins = wins >= 2;
-      const shouldEndByTrades = trades.length >= totalAllocation;
+      const shouldEndByTrades = trades.length > totalAllocation;
       const shouldEndByTarget = capital >= targetCapital;
       const shouldEndByCapitalLost = capital <= 0 || (riskAmount > 0 && capital < riskAmount);
 
