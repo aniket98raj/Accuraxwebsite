@@ -45,21 +45,15 @@ export function TurtleDashboard() {
   const [consecutiveLosses, setConsecutiveLosses] = useState<number>(0);
   const [lastRiskAmount, setLastRiskAmount] = useState<number>(0);
   const [hasWon, setHasWon] = useState<boolean>(false);
-  
-  // Fixed target capital at 1.07% - always enabled
-  const targetPercent = 1.07;
+
+  // Fixed target capital at 1.0687% - always enabled
+  const targetPercent = 1.0687;
   const targetCapital = sessionStarted ? sessionStartCapital * (1 + targetPercent / 100) : capital * (1 + targetPercent / 100);
   const targetProfit = sessionStarted ? sessionStartCapital * (targetPercent / 100) : capital * (targetPercent / 100);
   
   // Initial risk percentage: 1.0212%
   const initialRiskPercent = 1.0212;
   
-  // Loss multiplier sequence for consecutive losses (applied to previous risk)
-  // Pre-win sequence: ×1.9043, ×1.8653, ×1.8135, ×1.7412, ×1.6325, ×1.4514, ×1.0882
-  // Post-win: always ×2.1767
-  const preWinMultipliers = [1.9043, 1.8653, 1.8135, 1.7412, 1.6325, 1.4514, 1.0882];
-  const postWinMultiplier = 2.1767;
-
   const baseRisk = sessionStarted
     ? sessionStartCapital * (initialRiskPercent / 100)
     : capital * (initialRiskPercent / 100);
@@ -67,27 +61,22 @@ export function TurtleDashboard() {
   // Calculate totalProfit early so it can be used in calculateRiskAmount
   const totalProfit = trades.reduce((sum, t) => sum + t.profit, 0);
 
+  const preWinMultipliers = [1.90432824128, 1.86553195865, 1.81374900079, 1.74117414628, 1.63235024569, 1.45098385199, 1.08823605281];
+
   const calculateRiskAmount = () => {
-    if (consecutiveLosses === 0) {
-      if (hasWon) {
-        // After a win: next risk = remaining profit needed / 0.85
-        const remainingProfit = targetProfit - totalProfit;
-        if (remainingProfit <= 0) return 0;
-        return remainingProfit / 0.85;
-      }
-      // No losses, no wins yet — use base risk
-      return baseRisk;
-    }
+    // After any win: always use remainingProfit / 0.85
     if (hasWon) {
-      // After first win, every loss multiplies by 2.1767
-      return lastRiskAmount * postWinMultiplier;
+      const remainingProfit = targetProfit - totalProfit;
+      if (remainingProfit <= 0) return 0;
+      return remainingProfit / 0.85;
     }
-    // Pre-win: use predefined multiplier sequence
+    // No wins yet, no losses: use base risk
+    if (consecutiveLosses === 0) return baseRisk;
+    // No wins yet, losses: use pre-win multiplier sequence
     const idx = consecutiveLosses - 1;
-    const multiplier =
-      idx < preWinMultipliers.length
-        ? preWinMultipliers[idx]
-        : preWinMultipliers[preWinMultipliers.length - 1];
+    const multiplier = idx < preWinMultipliers.length
+      ? preWinMultipliers[idx]
+      : preWinMultipliers[preWinMultipliers.length - 1];
     return lastRiskAmount * multiplier;
   };
 
@@ -146,7 +135,7 @@ export function TurtleDashboard() {
     if (sessionStarted) {
       const shouldEndByWins = wins >= 2;
       const shouldEndByTrades = trades.length > totalAllocation;
-      const shouldEndByTarget = capital >= targetCapital;
+      const shouldEndByTarget = wins >= 2 && capital >= targetCapital;
       const shouldEndByCapitalLost = capital <= 0 || (riskAmount > 0 && capital < riskAmount);
 
       if (shouldEndByCapitalLost) {
@@ -189,6 +178,18 @@ export function TurtleDashboard() {
     }
   };
 
+  const resetOverallDashboard = () => {
+    setSessionHistory([]);
+    setSessionStarted(false);
+    setCapital(0);
+    setCurrentCapital(0);
+    setTrades([]);
+    setSessionStartCapital(0);
+    setConsecutiveLosses(0);
+    setLastRiskAmount(0);
+    setHasWon(false);
+  };
+
   const resetSession = () => {
     setSessionStarted(false);
     setCapital(0);
@@ -205,7 +206,7 @@ export function TurtleDashboard() {
       <div className="max-w-7xl mx-auto w-full">
         {/* Main Header */}
         <div className="mb-8">
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4 mb-4">
             {/* Title Section */}
             <div className="flex items-center gap-3">
               <span className="text-5xl">🐢</span>
@@ -214,17 +215,36 @@ export function TurtleDashboard() {
                 <p className="text-blue-400 text-base sm:text-lg">Low Risk Growth Model</p>
               </div>
             </div>
-            
-            {/* Tutorial Button - Full width on mobile */}
-            <Button
-              onClick={() => setShowTutorial(true)}
-              variant="outline"
-              size="sm"
-              className="border-blue-500/30 text-blue-400 hover:bg-blue-500/10 hover:text-blue-300 hover:border-blue-500/50 w-full sm:w-auto"
-            >
-              <BookOpen className="w-4 h-4 mr-2" />
-              Tutorial
-            </Button>
+
+            {/* Buttons Section - Stack on mobile, inline on larger screens */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
+              {/* Tutorial Button */}
+              <Button
+                onClick={() => setShowTutorial(true)}
+                variant="outline"
+                size="sm"
+                className="border-blue-500/30 text-blue-400 hover:bg-blue-500/10 hover:text-blue-300 hover:border-blue-500/50 w-full sm:w-auto"
+              >
+                <BookOpen className="w-4 h-4 mr-2" />
+                Tutorial
+              </Button>
+
+              {/* Reset Overall Dashboard Button */}
+              <Button
+                onClick={resetOverallDashboard}
+                variant="outline"
+                size="sm"
+                type="button"
+                disabled={sessionHistory.length === 0}
+                className={sessionHistory.length >= maxSessions
+                  ? "border-red-500 text-red-400 bg-red-500/20 hover:bg-red-500/30 hover:text-red-300 hover:border-red-400 shadow-[0_0_12px_rgba(239,68,68,0.5)] animate-pulse w-full sm:w-auto"
+                  : "border-red-500/30 text-red-400 hover:bg-red-500/10 hover:text-red-300 hover:border-red-500/50 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-red-400 w-full sm:w-auto"
+                }
+              >
+                <RotateCcw className="w-4 h-4 mr-2" />
+                Reset Session
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -232,9 +252,6 @@ export function TurtleDashboard() {
         <div className="mb-12">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-white">Overall Dashboard</h2>
-            <div className="text-sm text-gray-400">
-              {totalSessions}/{maxSessions} Sessions Completed
-            </div>
           </div>
 
           {/* Overall Statistics Grid */}
@@ -305,7 +322,7 @@ export function TurtleDashboard() {
                 <DollarSign className="w-4 h-4 text-yellow-400 mb-1" />
                 <p className="text-[9px] sm:text-[10px] lg:text-xs text-gray-400 leading-tight">Total P/L</p>
                 <p className={`text-sm sm:text-base lg:text-3xl font-bold break-all ${totalProfitAcrossAllSessions >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                  {totalProfitAcrossAllSessions >= 0 ? '+' : ''}₹{totalProfitAcrossAllSessions.toFixed(0)}
+                  {totalProfitAcrossAllSessions >= 0 ? '+' : ''}₹{totalProfitAcrossAllSessions.toFixed(2)}
                 </p>
                 <p className="text-[8px] sm:text-[9px] lg:text-xs text-gray-500">Net</p>
               </div>
@@ -462,7 +479,7 @@ export function TurtleDashboard() {
               <div className="flex flex-col gap-1">
                 <Activity className="w-4 h-4 text-orange-400 mb-1" />
                 <p className="text-[9px] sm:text-[10px] lg:text-xs text-gray-400 leading-tight">Risk Tracker</p>
-                <p className="text-lg sm:text-xl lg:text-3xl font-bold text-white">9|2</p>
+                <p className="text-lg sm:text-xl lg:text-3xl font-bold text-white">{totalAllocation - trades.length}|{Math.max(0, 2 - wins)}</p>
                 <p className="text-[8px] sm:text-[9px] lg:text-xs text-gray-500">Trades|Wins</p>
               </div>
             </Card>
@@ -640,17 +657,17 @@ export function TurtleDashboard() {
                               </div>
                             </td>
                             <td className="py-3 px-2 text-right text-white text-xs whitespace-nowrap">
-                              ₹{trade.amount.toFixed(0)}
+                              ₹{trade.amount.toFixed(2)}
                             </td>
                             <td className="py-3 px-2 text-right">
                               <span className={`font-bold text-xs whitespace-nowrap ${
                                 trade.profit >= 0 ? "text-green-400" : "text-red-400"
                               }`}>
-                                {trade.profit >= 0 ? "+" : "-"}₹{Math.abs(trade.profit).toFixed(0)}
+                                {trade.profit >= 0 ? "+" : "-"}₹{Math.abs(trade.profit).toFixed(2)}
                               </span>
                             </td>
                             <td className="py-3 px-2 text-right text-white font-medium text-xs whitespace-nowrap">
-                              ₹{capitalAfter.toFixed(0)}
+                              ₹{capitalAfter.toFixed(2)}
                             </td>
                           </tr>
                         );
