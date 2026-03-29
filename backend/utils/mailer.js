@@ -12,7 +12,7 @@ const transporter = nodemailer.createTransport({
 
 const FROM = `"AccuraX" <${process.env.SMTP_USER || 'noreply@accurax.in'}>`;
 const BASE_URL = process.env.FRONTEND_URL || 'https://accurax.in';
-const API_URL  = process.env.API_URL       || BASE_URL;
+const API_URL  = process.env.API_URL       || 'https://api.accurax.in';
 
 // ── Send email confirmation ────────────────────────────────────────────────────
 export async function sendConfirmationEmail(email, token) {
