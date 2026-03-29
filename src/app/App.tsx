@@ -33,6 +33,7 @@ import { TurtleDashboard } from "./pages/TurtleDashboard";
 // Auth/Payment/User
 import { PaymentPage } from "./pages/PaymentPage";
 import { UserDashboard } from "./pages/UserDashboard";
+import { ConfirmEmail } from "./pages/ConfirmEmail";
 
 export default function App() {
   return (
@@ -45,6 +46,7 @@ export default function App() {
             <Route path="/signup" element={<Signup />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/confirm-email" element={<ConfirmEmail />} />
 
             {/* Dashboard pages — header only, no footer */}
             <Route

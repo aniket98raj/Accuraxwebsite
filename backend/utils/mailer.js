@@ -16,7 +16,7 @@ const API_URL  = process.env.API_URL       || 'https://api.accurax.in';
 
 // ── Send email confirmation ────────────────────────────────────────────────────
 export async function sendConfirmationEmail(email, token) {
-  const link = `${API_URL}/api/auth/confirm-email?token=${token}`;
+  const link = `${BASE_URL}/confirm-email?token=${token}`;
   await transporter.sendMail({
     from: FROM,
     to: email,
